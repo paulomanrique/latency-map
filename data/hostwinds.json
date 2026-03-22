@@ -1,0 +1,33 @@
+{
+  "name": "Hostwinds",
+  "website": "https://www.hostwinds.com",
+  "hosts": [
+    {
+      "city": "Dallas",
+      "country": "United States",
+      "continent": "North America",
+      "regionId": "dallas",
+      "hostname": "108.174.193.107",
+      "latitude": 32.7767,
+      "longitude": -96.797
+    },
+    {
+      "city": "Seattle",
+      "country": "United States",
+      "continent": "North America",
+      "regionId": "seattle",
+      "hostname": "104.168.168.16",
+      "latitude": 47.6062,
+      "longitude": -122.3321
+    },
+    {
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "continent": "Europe",
+      "regionId": "amsterdam",
+      "hostname": "193.188.25.11",
+      "latitude": 52.3676,
+      "longitude": 4.9041
+    }
+  ]
+}

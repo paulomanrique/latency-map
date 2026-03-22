@@ -1,0 +1,24 @@
+{
+  "name": "Liquid Web",
+  "website": "https://www.liquidweb.com",
+  "hosts": [
+    {
+      "city": "Lansing",
+      "country": "United States",
+      "continent": "North America",
+      "regionId": "lansing",
+      "hostname": "67.227.243.243",
+      "latitude": 42.7325,
+      "longitude": -84.5555
+    },
+    {
+      "city": "Phoenix",
+      "country": "United States",
+      "continent": "North America",
+      "regionId": "phoenix",
+      "hostname": "50.28.98.7",
+      "latitude": 33.4484,
+      "longitude": -112.074
+    }
+  ]
+}
