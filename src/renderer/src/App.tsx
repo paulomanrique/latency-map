@@ -713,7 +713,7 @@ function App() {
             </div>
             <div className="sidebar-logo-text">LatencyMap</div>
           </div>
-          <div className="sidebar-scroll">
+          <div className="sidebar-static">
             <div
               className={`nav-item ${viewMode === 'query' && !activeProviderId ? 'active' : ''}`}
               onClick={() => {
@@ -734,6 +734,8 @@ function App() {
             </div>
             <div className="sidebar-divider"></div>
             <div className="sidebar-section-label">Providers</div>
+          </div>
+          <div className="sidebar-provider-list">
             {sortedProviders.map((provider) => (
               <div
                 key={provider.id}
