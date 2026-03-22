@@ -325,12 +325,21 @@ function App() {
         }
       }
     );
+    const unsubscribeCatalog = window.latencyMap.onCatalogUpdated((updated) => {
+      setCatalog(updated);
+      setQuery((current) => ({
+        ...current,
+        selectedProviderIds: updated.providers.map((provider) => provider.id),
+      }));
+      pushRendererLog('info', `Catalog updated: ${updated.providers.length} providers.`);
+    });
     void window.latencyMap.checkForUpdates();
     pushRendererLog('info', 'Renderer initialized.');
     return () => {
       unsubscribe();
       unsubscribeLogs();
       unsubscribeProgress();
+      unsubscribeCatalog();
     };
   }, []);
 

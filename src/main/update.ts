@@ -126,6 +126,10 @@ export class UpdateManager {
   }
 
   async checkForUpdates(): Promise<UpdateStatus> {
+    if (!app.isPackaged) {
+      return this.status;
+    }
+
     const now = Date.now();
     if (this.inFlightCheck) {
       return this.inFlightCheck;

@@ -199,4 +199,5 @@ export interface LatencyMapApi {
   onUpdateStatus: (callback: (status: UpdateStatus) => void) => () => void;
   onLogEntry: (callback: (entry: LogEntry) => void) => () => void;
   onMeasurementProgress: (callback: (event: MeasurementProgressEvent) => void) => () => void;
+  onCatalogUpdated: (callback: (catalog: ProviderCatalog) => void) => () => void;
 }

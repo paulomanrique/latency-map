@@ -5,15 +5,18 @@ import type {
   AppSettings,
   CustomHost,
   MeasurementProgressEvent,
+  ProviderCatalog,
   RunMeasurementsRequest,
   UpdateStatus,
 } from '../shared/types';
+import { fetchRemoteCatalog, loadCachedCatalog } from './catalog-updater';
 import { runNativeMeasurements } from './native';
 import { appStore } from './store';
 import { updateManager } from './update';
 import { clearLogs, getLogs, writeLog } from './logger';
 
 let mainWindow: BrowserWindow | null = null;
+let activeCatalog: ProviderCatalog = catalog;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -42,7 +45,7 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   writeLog('main', 'info', 'Application started.');
-  ipcMain.handle('catalog:get', async () => catalog);
+  ipcMain.handle('catalog:get', async () => activeCatalog);
   ipcMain.handle('state:get', async () => appStore.read());
   ipcMain.handle('logs:get', async () => getLogs());
   ipcMain.handle('logs:clear', async () => clearLogs());
@@ -101,6 +104,28 @@ app.whenReady().then(() => {
   updateManager.subscribe((status) => {
     mainWindow?.webContents.send('updates:status', status);
   });
+
+  // Load cached catalog (fast, from disk), then fetch latest from GitHub in background
+  loadCachedCatalog()
+    .then((cached) => {
+      if (cached && cached.providers.length > 0) {
+        activeCatalog = cached;
+        writeLog('main', 'info', `Using cached catalog (${cached.providers.length} providers).`);
+        mainWindow?.webContents.send('catalog:updated', activeCatalog);
+      }
+    })
+    .catch(() => {});
+
+  // Fetch from GitHub in background (non-blocking)
+  fetchRemoteCatalog()
+    .then((remote) => {
+      if (remote && remote.providers.length > 0) {
+        activeCatalog = remote;
+        writeLog('main', 'info', `Catalog updated from GitHub (${remote.providers.length} providers).`);
+        mainWindow?.webContents.send('catalog:updated', activeCatalog);
+      }
+    })
+    .catch(() => {});
 
   createWindow();
 
