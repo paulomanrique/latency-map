@@ -1,0 +1,15 @@
+{
+  "name": "Time4VPS",
+  "website": "https://www.time4vps.com",
+  "hosts": [
+    {
+      "city": "Vilnius",
+      "country": "Lithuania",
+      "continent": "Europe",
+      "regionId": "lithuania",
+      "hostname": "212.24.110.207",
+      "latitude": 54.6872,
+      "longitude": 25.2797
+    }
+  ]
+}
