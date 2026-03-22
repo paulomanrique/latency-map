@@ -1,6 +1,6 @@
 import type { HostSeed, ProviderCatalog, ProviderId } from './types';
 
-interface ProviderHostRecord {
+export interface ProviderHostRecord {
   city: string;
   country: string;
   continent: string;
@@ -10,7 +10,7 @@ interface ProviderHostRecord {
   hostname: string;
 }
 
-interface ProviderFileRecord {
+export interface ProviderFileRecord {
   name: string;
   website: string;
   hosts: ProviderHostRecord[];
@@ -26,11 +26,6 @@ function providerIcon(id: string): string {
   return iconPool[hash % iconPool.length];
 }
 
-const providerFiles = import.meta.glob('../../data/*.json', {
-  eager: true,
-  import: 'default',
-}) as Record<string, ProviderFileRecord>;
-
 function slugify(value: string): string {
   return value
     .toLowerCase()
@@ -43,7 +38,7 @@ function slugify(value: string): string {
 function buildHostSeed(
   providerId: ProviderId,
   providerName: string,
-  providerIcon: string,
+  icon: string,
   host: ProviderHostRecord
 ): HostSeed {
   const idSource = `${providerId}-${host.regionId || `${host.city}-${host.country}-${host.hostname}`}`;
@@ -53,7 +48,7 @@ function buildHostSeed(
     id: slugify(idSource),
     providerId,
     providerName,
-    providerIcon,
+    providerIcon: icon,
     city: host.city,
     country: host.country,
     continent: host.continent,
@@ -68,31 +63,48 @@ function buildHostSeed(
   };
 }
 
-export const catalog: ProviderCatalog = {
-  providers: Object.entries(providerFiles)
-    .map(([filePath, provider]) => {
-      const providerId = filePath.split('/').pop()?.replace('.json', '') ?? '';
-      if (!providerId) {
-        return null;
-      }
+/**
+ * Build a ProviderCatalog from a map of provider files.
+ * Keys should be provider IDs (e.g. 'aws', 'google-cloud').
+ */
+export function buildCatalog(
+  providers: Record<string, ProviderFileRecord>
+): ProviderCatalog {
+  return {
+    providers: Object.entries(providers)
+      .map(([providerId, provider]) => {
+        if (!providerId) return null;
 
-      const name = provider.name?.trim() || providerId;
-      const icon = providerIcon(providerId);
+        const name = provider.name?.trim() || providerId;
+        const icon = providerIcon(providerId);
 
-      return {
-        id: providerId,
-        name,
-        icon,
-        website: provider.website?.trim(),
-        hosts: provider.hosts.map((host) =>
-          buildHostSeed(
-            providerId,
-            name,
-            icon,
-            host
-          )
-        ),
-      };
-    })
-    .filter((provider): provider is NonNullable<typeof provider> => provider !== null),
-};
+        return {
+          id: providerId,
+          name,
+          icon,
+          website: provider.website?.trim(),
+          hosts: provider.hosts.map((host) =>
+            buildHostSeed(providerId, name, icon, host)
+          ),
+        };
+      })
+      .filter(
+        (provider): provider is NonNullable<typeof provider> => provider !== null
+      ),
+  };
+}
+
+/* ── Bundled catalog (build-time, via Vite import.meta.glob) ── */
+
+const providerFiles = import.meta.glob('../../data/*.json', {
+  eager: true,
+  import: 'default',
+}) as Record<string, ProviderFileRecord>;
+
+const bundledProviders: Record<string, ProviderFileRecord> = {};
+for (const [filePath, provider] of Object.entries(providerFiles)) {
+  const id = filePath.split('/').pop()?.replace('.json', '') ?? '';
+  if (id) bundledProviders[id] = provider;
+}
+
+export const catalog: ProviderCatalog = buildCatalog(bundledProviders);

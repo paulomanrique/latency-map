@@ -1,5 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { LatencyMapApi, MeasurementProgressEvent, UpdateStatus } from '../shared/types';
+import type {
+  LatencyMapApi,
+  MeasurementProgressEvent,
+  ProviderCatalog,
+  UpdateStatus,
+} from '../shared/types';
 
 const api: LatencyMapApi = {
   getCatalog: () => ipcRenderer.invoke('catalog:get'),
@@ -38,6 +43,16 @@ const api: LatencyMapApi = {
     };
     ipcRenderer.on('measurements:progress', listener);
     return () => ipcRenderer.removeListener('measurements:progress', listener);
+  },
+  onCatalogUpdated: (callback) => {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      catalog: ProviderCatalog
+    ) => {
+      callback(catalog);
+    };
+    ipcRenderer.on('catalog:updated', listener);
+    return () => ipcRenderer.removeListener('catalog:updated', listener);
   },
 };
 

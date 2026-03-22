@@ -6,6 +6,10 @@ Instructions for AI agents working on this codebase.
 
 **Always commit and push after every change.** Each logical alteration — a bug fix, a new feature, a refactor, a new data file — must be committed and pushed to the remote immediately. Do not batch unrelated changes into a single commit.
 
+## Pull requests and commits
+
+Do not add promotional footers, badges, or "Generated with" lines to pull request descriptions or commit messages. Keep them clean and technical.
+
 ## Project overview
 
 LatencyMap is an Electron + React desktop app that measures network latency and traceroute to cloud provider endpoints. It runs native OS ping/traceroute commands (no external binaries).
