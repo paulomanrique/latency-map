@@ -28,8 +28,8 @@
     </filter>
   </defs>
 
-  <rect width="1024" height="1024" rx="232" fill="url(#bg)"/>
-  <rect width="1024" height="1024" rx="232" fill="url(#spot)"/>
+  <rect x="64" y="64" width="896" height="896" rx="204" fill="url(#bg)"/>
+  <rect x="64" y="64" width="896" height="896" rx="204" fill="url(#spot)"/>
 
   <g opacity="0.17">
     <path d="M140 274H884" stroke="#B197FC" stroke-width="2"/>
