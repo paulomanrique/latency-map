@@ -1,0 +1,15 @@
+{
+  "name": "Webdock",
+  "website": "https://webdock.io",
+  "hosts": [
+    {
+      "city": "Copenhagen",
+      "country": "Denmark",
+      "continent": "Europe",
+      "regionId": "copenhagen",
+      "hostname": "89.28.236.16",
+      "latitude": 55.6761,
+      "longitude": 12.5683
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "name": "Servinga",
+  "website": "https://servinga.com",
+  "hosts": [
+    {
+      "city": "Dallas",
+      "country": "United States",
+      "continent": "North America",
+      "regionId": "us",
+      "hostname": "lg-us.servinga.cloud",
+      "latitude": 32.7767,
+      "longitude": -96.797
+    },
+    {
+      "city": "Barcelona",
+      "country": "Spain",
+      "continent": "Europe",
+      "regionId": "es",
+      "hostname": "lg-es.servinga.cloud",
+      "latitude": 41.3874,
+      "longitude": 2.1686
+    },
+    {
+      "city": "Frankfurt am Main",
+      "country": "Germany",
+      "continent": "Europe",
+      "regionId": "de",
+      "hostname": "lg-de.servinga.cloud",
+      "latitude": 50.1109,
+      "longitude": 8.6821
+    },
+    {
+      "city": "Rotterdam",
+      "country": "Netherlands",
+      "continent": "Europe",
+      "regionId": "nl",
+      "hostname": "lg-nl.servinga.cloud",
+      "latitude": 51.9244,
+      "longitude": 4.4777
+    },
+    {
+      "city": "Manchester",
+      "country": "United Kingdom",
+      "continent": "Europe",
+      "regionId": "uk",
+      "hostname": "lg-uk.servinga.cloud",
+      "latitude": 53.4808,
+      "longitude": -2.2426
+    },
+    {
+      "city": "Stockholm",
+      "country": "Sweden",
+      "continent": "Europe",
+      "regionId": "se",
+      "hostname": "lg-se.servinga.cloud",
+      "latitude": 59.3293,
+      "longitude": 18.0686
+    },
+    {
+      "city": "Zug",
+      "country": "Switzerland",
+      "continent": "Europe",
+      "regionId": "ch",
+      "hostname": "lg-ch.servinga.cloud",
+      "latitude": 47.1662,
+      "longitude": 8.5155
+    },
+    {
+      "city": "Bucharest",
+      "country": "Romania",
+      "continent": "Europe",
+      "regionId": "ro",
+      "hostname": "lg-ro.servinga.cloud",
+      "latitude": 44.4268,
+      "longitude": 26.1025
+    },
+    {
+      "city": "Tallinn",
+      "country": "Estonia",
+      "continent": "Europe",
+      "regionId": "ee",
+      "hostname": "lg-ee.servinga.cloud",
+      "latitude": 59.437,
+      "longitude": 24.7536
+    }
+  ]
+}

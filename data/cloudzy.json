@@ -1,0 +1,51 @@
+{
+  "name": "Cloudzy",
+  "website": "https://cloudzy.com",
+  "hosts": [
+    {
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "continent": "Europe",
+      "regionId": "amsterdam",
+      "hostname": "lg-amsterdam.cloudzy.com",
+      "latitude": 52.3676,
+      "longitude": 4.9041
+    },
+    {
+      "city": "Frankfurt am Main",
+      "country": "Germany",
+      "continent": "Europe",
+      "regionId": "frankfurt",
+      "hostname": "lg-frankfurt.cloudzy.com",
+      "latitude": 50.1109,
+      "longitude": 8.6821
+    },
+    {
+      "city": "London",
+      "country": "United Kingdom",
+      "continent": "Europe",
+      "regionId": "london",
+      "hostname": "lg-london.cloudzy.com",
+      "latitude": 51.5072,
+      "longitude": -0.1276
+    },
+    {
+      "city": "New York City",
+      "country": "United States",
+      "continent": "North America",
+      "regionId": "new-york-city",
+      "hostname": "lg-newyorkcity.cloudzy.com",
+      "latitude": 40.7128,
+      "longitude": -74.006
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "continent": "Asia",
+      "regionId": "singapore",
+      "hostname": "lg-singapore.cloudzy.com",
+      "latitude": 1.3521,
+      "longitude": 103.8198
+    }
+  ]
+}
