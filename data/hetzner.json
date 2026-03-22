@@ -1,0 +1,60 @@
+{
+  "name": "Hetzner",
+  "website": "https://www.hetzner.com",
+  "hosts": [
+    {
+      "city": "Falkenstein",
+      "country": "Germany",
+      "regionId": "fsn1",
+      "hostname": "fsn1-speed.hetzner.com",
+      "continent": "Europe",
+      "latitude": 48.7167,
+      "longitude": 16.5833
+    },
+    {
+      "city": "Nuremberg",
+      "country": "Germany",
+      "regionId": "nbg1",
+      "hostname": "nbg1-speed.hetzner.com",
+      "continent": "Europe",
+      "latitude": 49.4542,
+      "longitude": 11.0775
+    },
+    {
+      "city": "Helsinki",
+      "country": "Finland",
+      "regionId": "hel1",
+      "hostname": "hel1-speed.hetzner.com",
+      "continent": "Europe",
+      "latitude": 60.1695,
+      "longitude": 24.9354
+    },
+    {
+      "city": "Ashburn",
+      "country": "United States",
+      "regionId": "ash",
+      "hostname": "ash-speed.hetzner.com",
+      "continent": "North America",
+      "latitude": 31.706,
+      "longitude": -83.6532
+    },
+    {
+      "city": "Hillsboro",
+      "country": "United States",
+      "regionId": "hil",
+      "hostname": "hil-speed.hetzner.com",
+      "continent": "North America",
+      "latitude": 45.5229,
+      "longitude": -122.9898
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "regionId": "sin",
+      "hostname": "sin-speed.hetzner.com",
+      "continent": "Asia",
+      "latitude": 1.2897,
+      "longitude": 103.8501
+    }
+  ]
+}

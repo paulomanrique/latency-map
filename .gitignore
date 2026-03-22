@@ -1,0 +1,8 @@
+node_modules
+dist
+out
+resources/bin
+native/latency-helper/target
+coverage
+.DS_Store
+*.log

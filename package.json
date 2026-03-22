@@ -1,0 +1,86 @@
+{
+  "name": "latency-map",
+  "version": "0.1.0",
+  "description": "Desktop latency benchmarking app with Electron and native system network tools.",
+  "main": "./out/main/index.js",
+  "author": "Codex",
+  "license": "Unlicense",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paulomanrique/latency-map.git"
+  },
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "build:renderer": "vite build",
+    "test": "vitest run",
+    "test:ui": "vitest run",
+    "package": "npm run build && electron-builder --publish never",
+    "release": "npm run build && electron-builder --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.6.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "semver": "^7.7.3"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.7.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "electron": "^37.5.0",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^4.0.0",
+    "jsdom": "^27.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.7",
+    "vitest": "^3.2.4"
+  },
+  "build": {
+    "appId": "com.latencymap.app",
+    "productName": "LatencyMap",
+    "directories": {
+      "buildResources": "assets"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "${env.GH_RELEASE_OWNER}",
+        "repo": "${env.GH_RELEASE_REPO}"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "${productName}-${version}-windows-${arch}.${ext}"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "artifactName": "${productName}-${version}-mac-${arch}.${ext}"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "tar.gz"
+      ],
+      "category": "Network",
+      "artifactName": "${productName}-${version}-linux-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

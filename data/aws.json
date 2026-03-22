@@ -1,0 +1,312 @@
+{
+  "name": "Amazon Web Services",
+  "website": "https://aws.amazon.com",
+  "hosts": [
+    {
+      "city": "Cape Town",
+      "country": "South Africa",
+      "regionId": "af-south-1",
+      "hostname": "ec2.af-south-1.amazonaws.com",
+      "continent": "Africa",
+      "latitude": -33.9258,
+      "longitude": 18.4232
+    },
+    {
+      "city": "Hong Kong",
+      "country": "Hong Kong",
+      "regionId": "ap-east-1",
+      "hostname": "ec2.ap-east-1.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 22.2783,
+      "longitude": 114.1747
+    },
+    {
+      "city": "Taipei",
+      "country": "Taiwan",
+      "regionId": "ap-east-2",
+      "hostname": "ec2.ap-east-2.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 25.0531,
+      "longitude": 121.5264
+    },
+    {
+      "city": "Tokyo",
+      "country": "Japan",
+      "regionId": "ap-northeast-1",
+      "hostname": "ec2.ap-northeast-1.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 35.6895,
+      "longitude": 139.6917
+    },
+    {
+      "city": "Seoul",
+      "country": "South Korea",
+      "regionId": "ap-northeast-2",
+      "hostname": "ec2.ap-northeast-2.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 37.566,
+      "longitude": 126.9784
+    },
+    {
+      "city": "Osaka",
+      "country": "Japan",
+      "regionId": "ap-northeast-3",
+      "hostname": "ec2.ap-northeast-3.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 34.6938,
+      "longitude": 135.5011
+    },
+    {
+      "city": "Mumbai",
+      "country": "India",
+      "regionId": "ap-south-1",
+      "hostname": "ec2.ap-south-1.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 19.0728,
+      "longitude": 72.8826
+    },
+    {
+      "city": "Hyderabad",
+      "country": "India",
+      "regionId": "ap-south-2",
+      "hostname": "ec2.ap-south-2.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 17.384,
+      "longitude": 78.4564
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "regionId": "ap-southeast-1",
+      "hostname": "ec2.ap-southeast-1.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 1.2897,
+      "longitude": 103.8501
+    },
+    {
+      "city": "Sydney",
+      "country": "Australia",
+      "regionId": "ap-southeast-2",
+      "hostname": "ec2.ap-southeast-2.amazonaws.com",
+      "continent": "Oceania",
+      "latitude": -33.8678,
+      "longitude": 151.2073
+    },
+    {
+      "city": "Jakarta",
+      "country": "Indonesia",
+      "regionId": "ap-southeast-3",
+      "hostname": "ec2.ap-southeast-3.amazonaws.com",
+      "continent": "Asia",
+      "latitude": -6.2146,
+      "longitude": 106.8451
+    },
+    {
+      "city": "Melbourne",
+      "country": "Australia",
+      "regionId": "ap-southeast-4",
+      "hostname": "ec2.ap-southeast-4.amazonaws.com",
+      "continent": "Oceania",
+      "latitude": -37.814,
+      "longitude": 144.9633
+    },
+    {
+      "city": "Kuala Lumpur",
+      "country": "Malaysia",
+      "regionId": "ap-southeast-5",
+      "hostname": "ec2.ap-southeast-5.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 3.1412,
+      "longitude": 101.6865
+    },
+    {
+      "city": "Auckland",
+      "country": "New Zealand",
+      "regionId": "ap-southeast-6",
+      "hostname": "ec2.ap-southeast-6.amazonaws.com",
+      "continent": "Oceania",
+      "latitude": -36.8485,
+      "longitude": 174.7635
+    },
+    {
+      "city": "Thailand",
+      "country": "Thailand",
+      "regionId": "ap-southeast-7",
+      "hostname": "ec2.ap-southeast-7.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 15.5,
+      "longitude": 101
+    },
+    {
+      "city": "Montreal",
+      "country": "Canada",
+      "regionId": "ca-central-1",
+      "hostname": "ec2.ca-central-1.amazonaws.com",
+      "continent": "North America",
+      "latitude": 45.5088,
+      "longitude": -73.5878
+    },
+    {
+      "city": "Calgary",
+      "country": "Canada",
+      "regionId": "ca-west-1",
+      "hostname": "ec2.ca-west-1.amazonaws.com",
+      "continent": "North America",
+      "latitude": 51.0501,
+      "longitude": -114.0853
+    },
+    {
+      "city": "Frankfurt",
+      "country": "Germany",
+      "regionId": "eu-central-1",
+      "hostname": "ec2.eu-central-1.amazonaws.com",
+      "continent": "Europe",
+      "latitude": 52.3471,
+      "longitude": 14.5506
+    },
+    {
+      "city": "Zurich",
+      "country": "Switzerland",
+      "regionId": "eu-central-2",
+      "hostname": "ec2.eu-central-2.amazonaws.com",
+      "continent": "Europe",
+      "latitude": 47.3667,
+      "longitude": 8.55
+    },
+    {
+      "city": "Stockholm",
+      "country": "Sweden",
+      "regionId": "eu-north-1",
+      "hostname": "ec2.eu-north-1.amazonaws.com",
+      "continent": "Europe",
+      "latitude": 59.3294,
+      "longitude": 18.0687
+    },
+    {
+      "city": "Milan",
+      "country": "Italy",
+      "regionId": "eu-south-1",
+      "hostname": "ec2.eu-south-1.amazonaws.com",
+      "continent": "Europe",
+      "latitude": 45.4643,
+      "longitude": 9.1895
+    },
+    {
+      "city": "Madrid",
+      "country": "Spain",
+      "regionId": "eu-south-2",
+      "hostname": "ec2.eu-south-2.amazonaws.com",
+      "continent": "Europe",
+      "latitude": 40.4165,
+      "longitude": -3.7026
+    },
+    {
+      "city": "Dublin",
+      "country": "Ireland",
+      "regionId": "eu-west-1",
+      "hostname": "ec2.eu-west-1.amazonaws.com",
+      "continent": "Europe",
+      "latitude": 53.3331,
+      "longitude": -6.2489
+    },
+    {
+      "city": "London",
+      "country": "United Kingdom",
+      "regionId": "eu-west-2",
+      "hostname": "ec2.eu-west-2.amazonaws.com",
+      "continent": "Europe",
+      "latitude": 51.5085,
+      "longitude": -0.1257
+    },
+    {
+      "city": "Paris",
+      "country": "France",
+      "regionId": "eu-west-3",
+      "hostname": "ec2.eu-west-3.amazonaws.com",
+      "continent": "Europe",
+      "latitude": 48.8534,
+      "longitude": 2.3488
+    },
+    {
+      "city": "Tel Aviv",
+      "country": "Israel",
+      "regionId": "il-central-1",
+      "hostname": "ec2.il-central-1.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 32.0809,
+      "longitude": 34.7806
+    },
+    {
+      "city": "Queretaro",
+      "country": "Mexico",
+      "regionId": "mx-central-1",
+      "hostname": "ec2.mx-central-1.amazonaws.com",
+      "continent": "North America",
+      "latitude": 15.8375,
+      "longitude": -92.7577
+    },
+    {
+      "city": "Dubai",
+      "country": "United Arab Emirates",
+      "regionId": "me-central-1",
+      "hostname": "ec2.me-central-1.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 25.0772,
+      "longitude": 55.3093
+    },
+    {
+      "city": "Manama",
+      "country": "Bahrain",
+      "regionId": "me-south-1",
+      "hostname": "ec2.me-south-1.amazonaws.com",
+      "continent": "Asia",
+      "latitude": 26.2279,
+      "longitude": 50.5857
+    },
+    {
+      "city": "São Paulo",
+      "country": "Brazil",
+      "regionId": "sa-east-1",
+      "hostname": "ec2.sa-east-1.amazonaws.com",
+      "continent": "South America",
+      "latitude": -23.5475,
+      "longitude": -46.6361
+    },
+    {
+      "city": "Ashburn",
+      "country": "United States",
+      "regionId": "us-east-1",
+      "hostname": "ec2.us-east-1.amazonaws.com",
+      "continent": "North America",
+      "latitude": 31.706,
+      "longitude": -83.6532
+    },
+    {
+      "city": "Columbus",
+      "country": "United States",
+      "regionId": "us-east-2",
+      "hostname": "ec2.us-east-2.amazonaws.com",
+      "continent": "North America",
+      "latitude": 39.9612,
+      "longitude": -82.9988
+    },
+    {
+      "city": "San Jose",
+      "country": "United States",
+      "regionId": "us-west-1",
+      "hostname": "ec2.us-west-1.amazonaws.com",
+      "continent": "North America",
+      "latitude": 37.3394,
+      "longitude": -121.895
+    },
+    {
+      "city": "Boardman",
+      "country": "United States",
+      "regionId": "us-west-2",
+      "hostname": "ec2.us-west-2.amazonaws.com",
+      "continent": "North America",
+      "latitude": 45.8399,
+      "longitude": -119.7006
+    }
+  ]
+}

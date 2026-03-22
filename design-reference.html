@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LatencyMap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base:       #0e1119;
+      --bg-panel:      #131822;
+      --bg-surface:    #151b28;
+      --bg-elevated:   #1c2333;
+      --bg-hover:      #212940;
+      --accent-violet: #b197fc;
+      --accent-pink:   #f783c0;
+      --good:   #4ade80;
+      --medium: #fbbf24;
+      --bad:    #f87171;
+      --text-primary:   #e2e8f0;
+      --text-secondary: #94a3b8;
+      --text-muted:     #4b5568;
+      --border:       rgba(177,151,252,0.11);
+      --border-hover: rgba(177,151,252,0.26);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      height: 100vh; overflow: hidden;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.07) 0px, rgba(0,0,0,0.07) 1px, transparent 1px, transparent 4px),
+        radial-gradient(circle, rgba(177,151,252,0.055) 1px, transparent 1px);
+      background-size: 100% 4px, 28px 28px;
+    }
+    .shell { display: flex; height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 216px; flex-shrink: 0;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sidebar-logo {
+      height: 56px; display: flex; align-items: center;
+      padding: 0 14px; border-bottom: 1px solid var(--border);
+      gap: 10px; flex-shrink: 0;
+    }
+    .logo-mark {
+      width: 26px; height: 26px;
+      border: 1.5px solid var(--accent-violet); border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 10px rgba(177,151,252,0.25); flex-shrink: 0;
+    }
+    .logo-bars { display: flex; align-items: flex-end; height: 13px; gap: 2px; }
+    .lbar { width: 3px; border-radius: 1px; background: var(--accent-violet); animation: lbaranim 1.5s ease-in-out infinite; }
+    .lbar:nth-child(1) { height: 5px;  animation-delay: 0s; }
+    .lbar:nth-child(2) { height: 9px;  animation-delay: 0.18s; }
+    .lbar:nth-child(3) { height: 13px; animation-delay: 0.36s; }
+    .lbar:nth-child(4) { height: 9px;  animation-delay: 0.54s; }
+    @keyframes lbaranim { 0%,100%{opacity:.35} 50%{opacity:1;box-shadow:0 0 5px var(--accent-violet)} }
+    .sidebar-logo-text {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px;
+      background: linear-gradient(120deg, #c4b5fd, #f9a8d4);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .sidebar-search-wrap { padding: 10px 12px 2px; }
+    .sidebar-search {
+      width: 100%; background: var(--bg-elevated);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 10px 6px 30px;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-primary);
+      outline: none; transition: border-color .15s, box-shadow .15s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234b5568' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: 10px center; background-color: var(--bg-elevated);
+    }
+    .sidebar-search::placeholder { color: var(--text-muted); }
+    .sidebar-search:focus { border-color: rgba(177,151,252,0.4); box-shadow: 0 0 0 3px rgba(177,151,252,0.08); }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px; font-size: 11px; color: var(--text-secondary);
+      cursor: pointer; transition: all .13s; border-left: 2px solid transparent; user-select: none;
+    }
+    .nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); border-left-color: var(--border-hover); }
+    .nav-item.active { background: rgba(177,151,252,0.08); color: #c4b5fd; border-left-color: var(--accent-violet); }
+    .nav-icon { font-size: 13px; width: 18px; text-align: center; flex-shrink: 0; }
+    .sidebar-divider { height: 1px; background: var(--border); margin: 8px 14px; }
+    .sidebar-section-label {
+      padding: 6px 14px 4px; font-family: 'Syne', sans-serif;
+      font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted);
+    }
+    .sidebar-legend { margin-top: auto; padding: 14px; border-top: 1px solid var(--border); }
+    .legend-title { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); font-family: 'Syne', sans-serif; margin-bottom: 9px; }
+    .legend-row { display: flex; align-items: center; gap: 8px; font-size: 10px; color: var(--text-secondary); margin-bottom: 6px; }
+    .legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar {
+      height: 56px; background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 22px; flex-shrink: 0; position: relative;
+    }
+    .topbar::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-violet) 30%, var(--accent-pink) 60%, transparent);
+    }
+    .topbar-center {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 22px;
+    }
+    .hud-stat { text-align: center; }
+    .hud-label { font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; font-family: 'Syne', sans-serif; }
+    .hud-val { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+    .hud-sep { width: 1px; height: 26px; background: var(--border); }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .live-badge {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+      font-family: 'Syne', sans-serif; color: var(--good);
+      border: 1px solid rgba(74,222,128,0.22); padding: 4px 10px; border-radius: 4px;
+      background: rgba(74,222,128,0.05);
+    }
+    .live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--good); box-shadow: 0 0 5px var(--good); animation: ldot 1.8s ease-in-out infinite; }
+    @keyframes ldot { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .rescan-btn {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.07em;
+      padding: 5px 13px; border-radius: 5px;
+      border: 1px solid rgba(177,151,252,0.3); background: rgba(177,151,252,0.08); color: #c4b5fd;
+      cursor: pointer; transition: all .18s;
+    }
+    .rescan-btn:hover { background: rgba(177,151,252,0.18); box-shadow: 0 0 12px rgba(177,151,252,0.2); }
+
+    .gear-btn {
+      width: 30px; height: 30px; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; cursor: pointer; transition: all .18s;
+      border: 1px solid rgba(177,151,252,0.2);
+      background: rgba(177,151,252,0.06); color: var(--text-muted);
+    }
+    .gear-btn:hover {
+      background: rgba(177,151,252,0.14); border-color: rgba(177,151,252,0.35);
+      color: #c4b5fd; transform: rotate(30deg);
+    }
+
+    /* Settings modal specifics */
+    .setting-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .setting-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .setting-label { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .setting-hint  { font-size: 9px; color: var(--text-muted); margin-top: 3px; letter-spacing: 0.02em; }
+
+    /* Stepper control */
+    .stepper {
+      display: flex; align-items: center; gap: 0;
+      border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+    }
+    .stepper-btn {
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; cursor: pointer; background: var(--bg-elevated);
+      color: var(--text-secondary); border: none; outline: none;
+      transition: background .14s, color .14s; user-select: none;
+    }
+    .stepper-btn:hover { background: var(--bg-hover); color: #c4b5fd; }
+    .stepper-val {
+      width: 42px; text-align: center;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      font-weight: 600; color: var(--text-primary);
+      background: var(--bg-elevated);
+      border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+      line-height: 30px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── VIEWS ── */
+    .view { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .view.active { display: flex; }
+    .table-scroll {
+      flex: 1; overflow-y: auto; padding: 18px 22px;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    .table-scroll::-webkit-scrollbar { width: 3px; }
+    .table-scroll::-webkit-scrollbar-thumb { background: rgba(177,151,252,0.18); border-radius: 2px; }
+
+    /* Provider blocks */
+    .provider-block { margin-bottom: 28px; }
+    .provider-heading { display: flex; align-items: center; gap: 9px; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .provider-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); }
+    .provider-pill { font-size: 9px; padding: 2px 7px; border-radius: 9px; background: var(--bg-elevated); color: var(--text-muted); }
+
+    /* ── DATA TABLE ── */
+    .data-table { width: 100%; border-collapse: separate; border-spacing: 0 3px; }
+    .data-table thead th {
+      font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-muted); padding: 4px 10px; text-align: left; font-weight: 500;
+    }
+    .sort-col::after { content: ' ↕'; opacity: 0.3; }
+    .sort-active::after { content: ' ↑'; color: var(--accent-violet); opacity: 1; }
+
+    /* Host row — clickable */
+    .host-row {
+      background: var(--bg-surface);
+      transition: background .12s, box-shadow .12s;
+      cursor: pointer;
+    }
+    .host-row:hover { background: var(--bg-hover); box-shadow: 0 0 0 1px var(--border-hover); }
+    .host-row.open  { background: var(--bg-elevated) !important; box-shadow: 0 0 0 1px rgba(177,151,252,0.2) !important; }
+    .row-best { background: rgba(74,222,128,0.04) !important; box-shadow: 0 0 0 1px rgba(74,222,128,0.14) !important; }
+    .row-best.open  { background: rgba(74,222,128,0.08) !important; box-shadow: 0 0 0 1px rgba(74,222,128,0.25) !important; }
+    .row-hidden { display: none !important; }
+
+    .data-table td { padding: 9px 10px; font-size: 12px; vertical-align: middle; }
+    .data-table td:first-child { border-radius: 5px 0 0 5px; }
+    .data-table td:last-child  { border-radius: 0 5px 5px 0; }
+
+    /* Expand chevron */
+    .row-chevron {
+      display: inline-block;
+      font-size: 10px; color: var(--text-muted);
+      transition: transform .2s, color .15s;
+      margin-right: 6px;
+    }
+    .host-row.open .row-chevron { transform: rotate(90deg); color: var(--accent-violet); }
+
+    .loc-name { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .loc-host { font-size: 10px; color: var(--text-muted); margin-top: 1px; font-style: italic; }
+    .lat { font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .lat-good   { color: var(--good);   text-shadow: 0 0 8px rgba(74,222,128,0.45); }
+    .lat-medium { color: var(--medium); }
+    .lat-bad    { color: var(--bad); }
+    .hops-val   { font-size: 11px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 99px; font-size: 9px; letter-spacing: 0.06em; font-weight: 600; text-transform: uppercase; }
+    .badge-good   { background: rgba(74,222,128,0.1);  border: 1px solid rgba(74,222,128,0.22);  color: var(--good); }
+    .badge-medium { background: rgba(251,191,36,0.1);  border: 1px solid rgba(251,191,36,0.22);  color: var(--medium); }
+    .badge-bad    { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.22); color: var(--bad); }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .dot-good   { background: var(--good);   box-shadow: 0 0 4px var(--good); }
+    .dot-medium { background: var(--medium); }
+    .dot-bad    { background: var(--bad); }
+    .best-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 7px; border-radius: 4px; font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      background: linear-gradient(110deg, rgba(167,139,250,0.18), rgba(244,114,182,0.18));
+      border: 1px solid rgba(196,181,253,0.35); color: #c4b5fd;
+      box-shadow: 0 0 8px rgba(167,139,250,0.18);
+    }
+    .q-track { width: 72px; height: 3px; background: var(--bg-elevated); border-radius: 2px; overflow: hidden; }
+    .q-fill  { height: 100%; border-radius: 2px; }
+    .qf-good   { background: linear-gradient(90deg, #4ade80, rgba(74,222,128,0.4)); }
+    .qf-medium { background: linear-gradient(90deg, #fbbf24, rgba(251,191,36,0.4)); }
+    .qf-bad    { background: linear-gradient(90deg, #f87171, rgba(248,113,113,0.4)); }
+
+    /* ── TRACEROUTE EXPAND ROW ── */
+    .trace-row { display: none; }
+    .trace-row.open { display: table-row; }
+    .trace-row > td {
+      padding: 0 !important;
+      border-radius: 0 0 6px 6px !important;
+      background: var(--bg-base) !important;
+    }
+
+    .trace-panel {
+      /* Height is animated via JS max-height trick */
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      border-bottom: 1px solid var(--border);
+      border-left: 1px solid rgba(177,151,252,0.15);
+      border-right: 1px solid rgba(177,151,252,0.15);
+      border-radius: 0 0 6px 6px;
+    }
+    .trace-row.open .trace-panel { max-height: 600px; }
+
+    .trace-inner {
+      padding: 12px 14px 14px 22px;
+    }
+
+    /* Trace header */
+    .trace-heading {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .trace-heading-label {
+      font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);
+    }
+    .trace-heading-target {
+      font-size: 10px; color: var(--accent-violet); font-style: italic;
+    }
+    .trace-heading-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* Hops list */
+    .trace-hops { display: flex; flex-direction: column; gap: 3px; }
+
+    .trace-hop {
+      display: flex; align-items: center; gap: 0;
+      padding: 5px 8px; border-radius: 4px;
+      transition: background .1s;
+    }
+    .trace-hop:hover { background: rgba(255,255,255,0.03); }
+
+    /* Vertical line connector */
+    .hop-connector {
+      display: flex; flex-direction: column; align-items: center;
+      width: 22px; flex-shrink: 0; margin-right: 10px;
+    }
+    .hop-num {
+      font-size: 9px; color: var(--text-muted);
+      font-variant-numeric: tabular-nums; width: 16px; text-align: right;
+      flex-shrink: 0; margin-right: 8px;
+    }
+    .hop-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+      border: 1.5px solid;
+    }
+    .hop-dot-good   { background: rgba(74,222,128,0.2);  border-color: var(--good);   box-shadow: 0 0 5px rgba(74,222,128,0.35); }
+    .hop-dot-medium { background: rgba(251,191,36,0.15); border-color: var(--medium); }
+    .hop-dot-bad    { background: rgba(248,113,113,0.15);border-color: var(--bad); }
+    .hop-dot-timeout{ background: transparent; border-color: var(--text-muted); border-style: dashed; }
+
+    /* Vertical line between dots */
+    .hop-line {
+      width: 1px; height: 10px; margin: 1px 0;
+      background: linear-gradient(to bottom, var(--border), rgba(177,151,252,0.06));
+    }
+
+    .hop-host {
+      flex: 1; min-width: 0;
+      font-size: 10px; color: var(--text-secondary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-right: 10px;
+    }
+    .hop-host-timeout { color: var(--text-muted); font-style: italic; }
+    .hop-ip {
+      font-size: 9px; color: var(--text-muted);
+      margin-left: 8px; flex-shrink: 0;
+    }
+    .hop-rtt {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      width: 54px; text-align: right; flex-shrink: 0;
+    }
+    .hop-rtt-good   { color: var(--good); }
+    .hop-rtt-medium { color: var(--medium); }
+    .hop-rtt-bad    { color: var(--bad); }
+    .hop-rtt-timeout{ color: var(--text-muted); }
+
+    .hop-delta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: var(--text-muted);
+      width: 44px; text-align: right; flex-shrink: 0; margin-left: 6px;
+    }
+    .hop-delta-high { color: var(--bad); }
+
+    /* Status footer */
+    .statusbar {
+      height: 32px; background: var(--bg-panel); border-top: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 22px; gap: 20px; flex-shrink: 0;
+    }
+    .sb-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--text-muted); }
+    .sb-val  { color: var(--text-primary); font-weight: 500; }
+    .sb-sep  { width: 1px; height: 12px; background: var(--border); }
+
+    /* ── CUSTOM HOSTS VIEW ── */
+    .ch-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 14px; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+    .ch-title  { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--text-primary); }
+    .ch-subtitle { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .btn-add {
+      display: flex; align-items: center; gap: 7px;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em;
+      padding: 7px 14px; border-radius: 6px;
+      background: linear-gradient(135deg, rgba(177,151,252,0.18), rgba(247,131,192,0.14));
+      border: 1px solid rgba(177,151,252,0.35); color: #c4b5fd; cursor: pointer; transition: all .18s;
+    }
+    .btn-add:hover { background: linear-gradient(135deg, rgba(177,151,252,0.3), rgba(247,131,192,0.22)); box-shadow: 0 0 14px rgba(177,151,252,0.22); }
+    .ch-list { flex: 1; overflow-y: auto; padding: 16px 22px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .ch-list::-webkit-scrollbar { width: 3px; }
+    .ch-list::-webkit-scrollbar-thumb { background: rgba(177,151,252,0.18); border-radius: 2px; }
+    .ch-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; gap: 10px; }
+    .ch-empty-icon { font-size: 32px; opacity: 0.3; }
+    .ch-empty-text { font-size: 12px; color: var(--text-muted); }
+    .ch-empty-sub  { font-size: 10px; color: var(--text-muted); opacity: 0.6; }
+    .ch-row { display: flex; align-items: center; background: var(--bg-surface); border-radius: 7px; padding: 11px 14px; margin-bottom: 5px; border: 1px solid transparent; transition: all .14s; }
+    .ch-row:hover { background: var(--bg-hover); border-color: var(--border); }
+    .ch-row-icon { width: 32px; height: 32px; border-radius: 7px; background: var(--bg-elevated); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; margin-right: 12px; }
+    .ch-row-info { flex: 1; min-width: 0; }
+    .ch-row-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 12px; color: var(--text-primary); }
+    .ch-row-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ch-row-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .btn-icon { width: 28px; height: 28px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; transition: all .14s; border: 1px solid transparent; background: transparent; color: var(--text-muted); }
+    .btn-icon:hover { background: var(--bg-elevated); border-color: var(--border); color: var(--text-primary); }
+    .btn-icon-edit:hover { color: #c4b5fd; border-color: rgba(177,151,252,0.3); background: rgba(177,151,252,0.08); }
+    .btn-icon-del:hover  { color: var(--bad); border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.08); }
+
+    /* ── MODALS ── */
+    .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(8,11,20,0.75); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; animation: fadeIn .15s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .modal {
+      background: var(--bg-panel); border: 1px solid rgba(177,151,252,0.2); border-radius: 10px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(177,151,252,0.08);
+      width: 440px; max-width: 90vw; position: relative;
+      animation: slideUp .18s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes slideUp { from{opacity:0;transform:translateY(10px) scale(0.98)} to{opacity:1;transform:none} }
+    .modal::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,transparent,var(--accent-violet) 40%,var(--accent-pink) 70%,transparent); border-radius:10px 10px 0 0; }
+    .modal-header { display:flex;align-items:center;justify-content:space-between; padding:18px 20px 14px; border-bottom:1px solid var(--border); }
+    .modal-title { font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--text-primary); }
+    .modal-close { width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);cursor:pointer;border:1px solid transparent;font-size:14px;transition:all .14s;background:transparent; }
+    .modal-close:hover { background:var(--bg-elevated);border-color:var(--border);color:var(--text-primary); }
+    .modal-body { padding:20px;display:flex;flex-direction:column;gap:16px; }
+    .field { display:flex;flex-direction:column;gap:6px; }
+    .field-label { font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:600; }
+    .field-input { background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-primary);outline:none;transition:border-color .15s,box-shadow .15s;width:100%; }
+    .field-input::placeholder { color:var(--text-muted); }
+    .field-input:focus { border-color:rgba(177,151,252,0.45);box-shadow:0 0 0 3px rgba(177,151,252,0.1); }
+    .field-hint { font-size:9px;color:var(--text-muted);margin-top:-2px; }
+    .modal-footer { display:flex;justify-content:flex-end;gap:8px;padding:14px 20px 18px;border-top:1px solid var(--border); }
+    .btn-cancel { font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em;padding:7px 16px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .14s; }
+    .btn-cancel:hover { background:var(--bg-elevated);color:var(--text-primary); }
+    .btn-save { font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em;padding:7px 18px;border-radius:5px;background:linear-gradient(135deg,rgba(177,151,252,0.25),rgba(247,131,192,0.2));border:1px solid rgba(177,151,252,0.4);color:#c4b5fd;cursor:pointer;transition:all .18s; }
+    .btn-save:hover { background:linear-gradient(135deg,rgba(177,151,252,0.38),rgba(247,131,192,0.3));box-shadow:0 0 14px rgba(177,151,252,0.25); }
+    .modal-confirm { width:380px; }
+    .confirm-body { padding:20px; }
+    .confirm-icon { width:40px;height:40px;border-radius:10px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px; }
+    .confirm-msg  { font-size:12px;color:var(--text-primary);line-height:1.6;margin-bottom:4px; }
+    .confirm-host { font-size:11px;color:var(--bad);font-style:italic;margin-bottom:2px; }
+    .confirm-sub  { font-size:10px;color:var(--text-muted);margin-top:6px; }
+    .btn-delete { font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em;padding:7px 18px;border-radius:5px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.35);color:var(--bad);cursor:pointer;transition:all .18s; }
+    .btn-delete:hover { background:rgba(248,113,113,0.22);box-shadow:0 0 12px rgba(248,113,113,0.2); }
+  </style>
+</head>
+<body>
+
+<!-- MODAL: Settings -->
+<div class="modal-overlay" id="modalSettings">
+  <div class="modal" style="width:400px;">
+    <div class="modal-header">
+      <div class="modal-title">Settings</div>
+      <button class="modal-close" onclick="closeModal('modalSettings')">✕</button>
+    </div>
+    <div class="modal-body" style="gap:0; padding: 6px 20px 4px;">
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Rounds per scan</div>
+          <div class="setting-hint">Number of pings sent per host to calculate average latency</div>
+        </div>
+        <div class="stepper">
+          <button class="stepper-btn" onclick="stepRounds(-1)">−</button>
+          <div class="stepper-val" id="roundsVal">5</div>
+          <button class="stepper-btn" onclick="stepRounds(+1)">+</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modalSettings')">Close</button>
+      <button class="btn-save"   onclick="saveSettings()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Add / Edit -->
+<div class="modal-overlay" id="modalEdit">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalEditTitle">Add Custom Host</div>
+      <button class="modal-close" onclick="closeModal('modalEdit')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editHostId">
+      <div class="field">
+        <label class="field-label">Name</label>
+        <input class="field-input" id="fieldName" type="text" placeholder="e.g. My VPS Berlin" autocomplete="off">
+        <span class="field-hint">A friendly label to identify this host</span>
+      </div>
+      <div class="field">
+        <label class="field-label">Location</label>
+        <input class="field-input" id="fieldLocation" type="text" placeholder="e.g. Berlin, Germany" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="field-label">Hostname / IP</label>
+        <input class="field-input" id="fieldHost" type="text" placeholder="e.g. 1.2.3.4 or myserver.example.com" autocomplete="off">
+        <span class="field-hint">Used for ICMP ping measurements</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modalEdit')">Cancel</button>
+      <button class="btn-save" onclick="saveHost()">Save Host</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Delete Confirm -->
+<div class="modal-overlay" id="modalDelete">
+  <div class="modal modal-confirm">
+    <div class="modal-header">
+      <div class="modal-title">Remove Host</div>
+      <button class="modal-close" onclick="closeModal('modalDelete')">✕</button>
+    </div>
+    <div class="confirm-body">
+      <div class="confirm-icon">🗑</div>
+      <div class="confirm-msg">Are you sure you want to remove this host?</div>
+      <div class="confirm-host" id="confirmHostName">—</div>
+      <div class="confirm-sub">This action cannot be undone. Latency history for this host will also be cleared.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modalDelete')">Cancel</button>
+      <button class="btn-delete" onclick="confirmDelete()">Remove Host</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-bars">
+          <div class="lbar"></div><div class="lbar"></div>
+          <div class="lbar"></div><div class="lbar"></div>
+        </div>
+      </div>
+      <div class="sidebar-logo-text">LatencyMap</div>
+    </div>
+    <div class="nav-item active" id="nav-all" onclick="switchView('all',this)">
+      <span class="nav-icon">◈</span>All Hosts
+    </div>
+    <div class="nav-item" id="nav-custom" onclick="switchView('custom',this)">
+      <span class="nav-icon">✦</span>Custom Hosts
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-search-wrap">
+      <input class="sidebar-search" type="text" placeholder="Search hosts..." id="searchInput" oninput="filterHosts(this.value)" autocomplete="off">
+    </div>
+    <div class="sidebar-section-label" style="margin-top:8px;">Providers</div>
+    <div class="nav-item" onclick="filterProvider('hetzner')"><span class="nav-icon">🟠</span>Hetzner</div>
+    <div class="nav-item" onclick="filterProvider('ovh')"><span class="nav-icon">🔵</span>OVH</div>
+    <div class="nav-item" onclick="filterProvider('aws')"><span class="nav-icon">🟡</span>Amazon Web Services</div>
+    <div class="sidebar-legend">
+      <div class="legend-title">Latency Legend</div>
+      <div class="legend-row"><div class="legend-dot" style="background:var(--good);box-shadow:0 0 5px var(--good);"></div>Good &lt;50ms</div>
+      <div class="legend-row"><div class="legend-dot" style="background:var(--medium);"></div>Medium 50–150ms</div>
+      <div class="legend-row"><div class="legend-dot" style="background:var(--bad);"></div>Poor &gt;150ms</div>
+    </div>
+  </aside>
+
+  <div class="main">
+
+    <!-- HUD Topbar -->
+    <header class="topbar">
+      <div class="sb-item" style="font-size:10px;">Updated 14s ago</div>
+      <div class="topbar-center">
+        <div class="hud-stat"><div class="hud-label">Best</div><div class="hud-val" style="color:var(--good);">12ms</div></div>
+        <div class="hud-sep"></div>
+        <div class="hud-stat"><div class="hud-label">Average</div><div class="hud-val">89ms</div></div>
+        <div class="hud-sep"></div>
+        <div class="hud-stat"><div class="hud-label">Hosts</div><div class="hud-val" id="hostCount">18</div></div>
+        <div class="hud-sep"></div>
+        <div class="hud-stat"><div class="hud-label">Worst</div><div class="hud-val" style="color:var(--bad);">220ms</div></div>
+      </div>
+      <div class="topbar-right">
+        <button class="rescan-btn">⟳ RUN</button>
+        <button class="gear-btn" onclick="openModal('modalSettings')" title="Settings">⚙</button>
+      </div>
+    </header>
+
+    <!-- ── VIEW: ALL HOSTS ── -->
+    <div class="view active" id="view-all">
+      <div class="table-scroll">
+
+        <!-- HETZNER -->
+        <div class="provider-block" id="block-hetzner">
+          <div class="provider-heading">
+            <span style="font-size:15px;">🟠</span>
+            <span class="provider-label">Hetzner</span>
+            <span class="provider-pill">6 nodes</span>
+          </div>
+          <table class="data-table">
+            <thead><tr>
+              <th style="width:28%">Location</th>
+              <th style="width:24%" class="sort-col">Hostname</th>
+              <th style="width:9%"  class="sort-active">Latency</th>
+              <th style="width:6%">Hops</th>
+              <th style="width:12%">Status</th>
+              <th style="width:10%">Quality</th>
+              <th style="width:11%"></th>
+            </tr></thead>
+            <tbody>
+              <tr class="host-row row-best" data-id="fsn1" data-search="falkenstein germany fsn1.hetzner.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Falkenstein, Germany</span><div class="loc-host" style="padding-left:18px;">fsn1.hetzner.com</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">fsn1.hetzner.com</span></td>
+                <td><span class="lat lat-good">12ms</span></td>
+                <td><span class="hops-val">5</span></td>
+                <td><span class="badge badge-good"><span class="badge-dot dot-good"></span>Good</span></td>
+                <td><div class="q-track"><div class="q-fill qf-good" style="width:95%"></div></div></td>
+                <td><span class="best-tag">★ BEST</span></td>
+              </tr>
+              <tr class="trace-row" id="trace-fsn1"><td colspan="7"><div class="trace-panel" id="panel-fsn1"></div></td></tr>
+
+              <tr class="host-row" data-id="nbg1" data-search="nuremberg germany nbg1.hetzner.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Nuremberg, Germany</span><div class="loc-host" style="padding-left:18px;">nbg1.hetzner.com</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">nbg1.hetzner.com</span></td>
+                <td><span class="lat lat-good">18ms</span></td>
+                <td><span class="hops-val">6</span></td>
+                <td><span class="badge badge-good"><span class="badge-dot dot-good"></span>Good</span></td>
+                <td><div class="q-track"><div class="q-fill qf-good" style="width:92%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-nbg1"><td colspan="7"><div class="trace-panel" id="panel-nbg1"></div></td></tr>
+
+              <tr class="host-row" data-id="hel1" data-search="helsinki finland hel1.hetzner.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Helsinki, Finland</span><div class="loc-host" style="padding-left:18px;">hel1.hetzner.com</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">hel1.hetzner.com</span></td>
+                <td><span class="lat lat-good">34ms</span></td>
+                <td><span class="hops-val">8</span></td>
+                <td><span class="badge badge-good"><span class="badge-dot dot-good"></span>Good</span></td>
+                <td><div class="q-track"><div class="q-fill qf-good" style="width:84%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-hel1"><td colspan="7"><div class="trace-panel" id="panel-hel1"></div></td></tr>
+
+              <tr class="host-row" data-id="ash" data-search="ashburn virginia ash.hetzner.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Ashburn, Virginia</span><div class="loc-host" style="padding-left:18px;">ash.hetzner.com</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">ash.hetzner.com</span></td>
+                <td><span class="lat lat-medium">98ms</span></td>
+                <td><span class="hops-val">12</span></td>
+                <td><span class="badge badge-medium"><span class="badge-dot dot-medium"></span>Medium</span></td>
+                <td><div class="q-track"><div class="q-fill qf-medium" style="width:58%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-ash"><td colspan="7"><div class="trace-panel" id="panel-ash"></div></td></tr>
+
+              <tr class="host-row" data-id="hil" data-search="hillsboro oregon hil.hetzner.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Hillsboro, Oregon</span><div class="loc-host" style="padding-left:18px;">hil.hetzner.com</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">hil.hetzner.com</span></td>
+                <td><span class="lat lat-medium">142ms</span></td>
+                <td><span class="hops-val">14</span></td>
+                <td><span class="badge badge-medium"><span class="badge-dot dot-medium"></span>Medium</span></td>
+                <td><div class="q-track"><div class="q-fill qf-medium" style="width:41%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-hil"><td colspan="7"><div class="trace-panel" id="panel-hil"></div></td></tr>
+
+              <tr class="host-row" data-id="sin" data-search="singapore sin.hetzner.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Singapore</span><div class="loc-host" style="padding-left:18px;">sin.hetzner.com</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">sin.hetzner.com</span></td>
+                <td><span class="lat lat-bad">187ms</span></td>
+                <td><span class="hops-val">16</span></td>
+                <td><span class="badge badge-bad"><span class="badge-dot dot-bad"></span>Poor</span></td>
+                <td><div class="q-track"><div class="q-fill qf-bad" style="width:22%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-sin"><td colspan="7"><div class="trace-panel" id="panel-sin"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- OVH -->
+        <div class="provider-block" id="block-ovh">
+          <div class="provider-heading">
+            <span style="font-size:15px;">🔵</span>
+            <span class="provider-label">OVH</span>
+            <span class="provider-pill">6 nodes</span>
+          </div>
+          <table class="data-table">
+            <thead><tr>
+              <th style="width:28%">Location</th>
+              <th style="width:24%" class="sort-col">Hostname</th>
+              <th style="width:9%"  class="sort-col">Latency</th>
+              <th style="width:6%">Hops</th>
+              <th style="width:12%">Status</th>
+              <th style="width:10%">Quality</th>
+              <th style="width:11%"></th>
+            </tr></thead>
+            <tbody>
+              <tr class="host-row" data-id="gra" data-search="gravelines france gra.ovh.net" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Gravelines, France</span><div class="loc-host" style="padding-left:18px;">gra.ovh.net</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">gra.ovh.net</span></td>
+                <td><span class="lat lat-good">22ms</span></td>
+                <td><span class="hops-val">6</span></td>
+                <td><span class="badge badge-good"><span class="badge-dot dot-good"></span>Good</span></td>
+                <td><div class="q-track"><div class="q-fill qf-good" style="width:90%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-gra"><td colspan="7"><div class="trace-panel" id="panel-gra"></div></td></tr>
+
+              <tr class="host-row" data-id="rbx" data-search="roubaix france rbx.ovh.net" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Roubaix, France</span><div class="loc-host" style="padding-left:18px;">rbx.ovh.net</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">rbx.ovh.net</span></td>
+                <td><span class="lat lat-good">28ms</span></td>
+                <td><span class="hops-val">7</span></td>
+                <td><span class="badge badge-good"><span class="badge-dot dot-good"></span>Good</span></td>
+                <td><div class="q-track"><div class="q-fill qf-good" style="width:87%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-rbx"><td colspan="7"><div class="trace-panel" id="panel-rbx"></div></td></tr>
+
+              <tr class="host-row" data-id="sbg" data-search="strasbourg france sbg.ovh.net" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Strasbourg, France</span><div class="loc-host" style="padding-left:18px;">sbg.ovh.net</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">sbg.ovh.net</span></td>
+                <td><span class="lat lat-good">31ms</span></td>
+                <td><span class="hops-val">7</span></td>
+                <td><span class="badge badge-good"><span class="badge-dot dot-good"></span>Good</span></td>
+                <td><div class="q-track"><div class="q-fill qf-good" style="width:85%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-sbg"><td colspan="7"><div class="trace-panel" id="panel-sbg"></div></td></tr>
+
+              <tr class="host-row" data-id="lon" data-search="london uk lon.ovh.net" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">London, UK</span><div class="loc-host" style="padding-left:18px;">lon.ovh.net</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">lon.ovh.net</span></td>
+                <td><span class="lat lat-good">45ms</span></td>
+                <td><span class="hops-val">8</span></td>
+                <td><span class="badge badge-good"><span class="badge-dot dot-good"></span>Good</span></td>
+                <td><div class="q-track"><div class="q-fill qf-good" style="width:78%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-lon"><td colspan="7"><div class="trace-panel" id="panel-lon"></div></td></tr>
+
+              <tr class="host-row" data-id="waw" data-search="warsaw poland waw.ovh.net" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Warsaw, Poland</span><div class="loc-host" style="padding-left:18px;">waw.ovh.net</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">waw.ovh.net</span></td>
+                <td><span class="lat lat-medium">67ms</span></td>
+                <td><span class="hops-val">10</span></td>
+                <td><span class="badge badge-medium"><span class="badge-dot dot-medium"></span>Medium</span></td>
+                <td><div class="q-track"><div class="q-fill qf-medium" style="width:68%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-waw"><td colspan="7"><div class="trace-panel" id="panel-waw"></div></td></tr>
+
+              <tr class="host-row" data-id="syd" data-search="sydney australia syd.ovh.net" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Sydney, Australia</span><div class="loc-host" style="padding-left:18px;">syd.ovh.net</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">syd.ovh.net</span></td>
+                <td><span class="lat lat-bad">210ms</span></td>
+                <td><span class="hops-val">18</span></td>
+                <td><span class="badge badge-bad"><span class="badge-dot dot-bad"></span>Poor</span></td>
+                <td><div class="q-track"><div class="q-fill qf-bad" style="width:14%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-syd"><td colspan="7"><div class="trace-panel" id="panel-syd"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- AWS -->
+        <div class="provider-block" id="block-aws">
+          <div class="provider-heading">
+            <span style="font-size:15px;">🟡</span>
+            <span class="provider-label">Amazon Web Services</span>
+            <span class="provider-pill">6 nodes</span>
+          </div>
+          <table class="data-table">
+            <thead><tr>
+              <th style="width:28%">Location</th>
+              <th style="width:24%" class="sort-col">Hostname</th>
+              <th style="width:9%"  class="sort-col">Latency</th>
+              <th style="width:6%">Hops</th>
+              <th style="width:12%">Status</th>
+              <th style="width:10%">Quality</th>
+              <th style="width:11%"></th>
+            </tr></thead>
+            <tbody>
+              <tr class="host-row" data-id="fra" data-search="frankfurt eu-central-1 ec2.eu-central-1.amazonaws.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Frankfurt</span><div class="loc-host" style="padding-left:18px;">eu-central-1</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">ec2.eu-central-1.amazonaws.com</span></td>
+                <td><span class="lat lat-good">41ms</span></td>
+                <td><span class="hops-val">9</span></td>
+                <td><span class="badge badge-good"><span class="badge-dot dot-good"></span>Good</span></td>
+                <td><div class="q-track"><div class="q-fill qf-good" style="width:80%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-fra"><td colspan="7"><div class="trace-panel" id="panel-fra"></div></td></tr>
+
+              <tr class="host-row" data-id="iad" data-search="n. virginia us-east-1 ec2.us-east-1.amazonaws.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">N. Virginia</span><div class="loc-host" style="padding-left:18px;">us-east-1</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">ec2.us-east-1.amazonaws.com</span></td>
+                <td><span class="lat lat-medium">89ms</span></td>
+                <td><span class="hops-val">13</span></td>
+                <td><span class="badge badge-medium"><span class="badge-dot dot-medium"></span>Medium</span></td>
+                <td><div class="q-track"><div class="q-fill qf-medium" style="width:62%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-iad"><td colspan="7"><div class="trace-panel" id="panel-iad"></div></td></tr>
+
+              <tr class="host-row" data-id="cmh" data-search="ohio us-east-2 ec2.us-east-2.amazonaws.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Ohio</span><div class="loc-host" style="padding-left:18px;">us-east-2</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">ec2.us-east-2.amazonaws.com</span></td>
+                <td><span class="lat lat-medium">95ms</span></td>
+                <td><span class="hops-val">14</span></td>
+                <td><span class="badge badge-medium"><span class="badge-dot dot-medium"></span>Medium</span></td>
+                <td><div class="q-track"><div class="q-fill qf-medium" style="width:59%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-cmh"><td colspan="7"><div class="trace-panel" id="panel-cmh"></div></td></tr>
+
+              <tr class="host-row" data-id="sfo" data-search="n. california us-west-1 ec2.us-west-1.amazonaws.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">N. California</span><div class="loc-host" style="padding-left:18px;">us-west-1</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">ec2.us-west-1.amazonaws.com</span></td>
+                <td><span class="lat lat-medium">131ms</span></td>
+                <td><span class="hops-val">15</span></td>
+                <td><span class="badge badge-medium"><span class="badge-dot dot-medium"></span>Medium</span></td>
+                <td><div class="q-track"><div class="q-fill qf-medium" style="width:44%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-sfo"><td colspan="7"><div class="trace-panel" id="panel-sfo"></div></td></tr>
+
+              <tr class="host-row" data-id="nrt" data-search="tokyo ap-northeast-1 ec2.ap-northeast-1.amazonaws.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">Tokyo</span><div class="loc-host" style="padding-left:18px;">ap-northeast-1</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">ec2.ap-northeast-1.amazonaws.com</span></td>
+                <td><span class="lat lat-bad">178ms</span></td>
+                <td><span class="hops-val">17</span></td>
+                <td><span class="badge badge-bad"><span class="badge-dot dot-bad"></span>Poor</span></td>
+                <td><div class="q-track"><div class="q-fill qf-bad" style="width:27%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-nrt"><td colspan="7"><div class="trace-panel" id="panel-nrt"></div></td></tr>
+
+              <tr class="host-row" data-id="gru" data-search="são paulo sa-east-1 ec2.sa-east-1.amazonaws.com" onclick="toggleTrace(this)">
+                <td><span class="row-chevron">▶</span><span class="loc-name">São Paulo</span><div class="loc-host" style="padding-left:18px;">sa-east-1</div></td>
+                <td><span style="color:var(--text-muted);font-size:10px;">ec2.sa-east-1.amazonaws.com</span></td>
+                <td><span class="lat lat-bad">220ms</span></td>
+                <td><span class="hops-val">19</span></td>
+                <td><span class="badge badge-bad"><span class="badge-dot dot-bad"></span>Poor</span></td>
+                <td><div class="q-track"><div class="q-fill qf-bad" style="width:10%"></div></div></td>
+                <td></td>
+              </tr>
+              <tr class="trace-row" id="trace-gru"><td colspan="7"><div class="trace-panel" id="panel-gru"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- /table-scroll -->
+      <footer class="statusbar">
+        <div class="sb-item"><span>Best:</span><span class="sb-val" style="color:var(--good);">12ms · fsn1.hetzner.com</span></div>
+        <div class="sb-sep"></div>
+        <div class="sb-item"><span>Avg:</span><span class="sb-val">89ms</span></div>
+        <div class="sb-sep"></div>
+        <div class="sb-item"><span style="color:var(--good);">●</span><span class="sb-val" style="color:var(--good);">9 good</span></div>
+        <div class="sb-item"><span style="color:var(--medium);">●</span><span class="sb-val" style="color:var(--medium);">6 medium</span></div>
+        <div class="sb-item"><span style="color:var(--bad);">●</span><span class="sb-val" style="color:var(--bad);">3 poor</span></div>
+        <div class="sb-sep" style="margin-left:auto;"></div>
+        <div class="sb-item"><span style="font-size:9px;letter-spacing:.06em;">LatencyMap v0.1.0</span></div>
+      </footer>
+    </div><!-- /view-all -->
+
+    <!-- ── VIEW: CUSTOM HOSTS ── -->
+    <div class="view" id="view-custom">
+      <div class="ch-header">
+        <div>
+          <div class="ch-title">Custom Hosts</div>
+          <div class="ch-subtitle">Manually configured endpoints for latency monitoring</div>
+        </div>
+        <button class="btn-add" onclick="openAddModal()"><span style="font-size:14px;line-height:1;">+</span>Add Host</button>
+      </div>
+      <div class="ch-list" id="chList"></div>
+      <footer class="statusbar">
+        <div class="sb-item"><span id="chCount">3</span><span class="sb-val" style="margin-left:4px;">custom hosts configured</span></div>
+        <div class="sb-sep" style="margin-left:auto;"></div>
+        <div class="sb-item"><span style="font-size:9px;letter-spacing:.06em;">LatencyMap v0.1.0</span></div>
+      </footer>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ─────────────────────────────────────────────────
+// TRACEROUTE DATA
+// Each hop: [n, ip, hostname, rtt_ms | null]
+// null = timeout / no response
+// ─────────────────────────────────────────────────
+const TRACES = {
+  fsn1: { target: 'fsn1.hetzner.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   4],
+    [4,  '213.239.252.14',   'core1.fra.hetzner.de',      8],
+    [5,  '213.239.245.14',   'fsn1-dc14.hetzner.com',    12],
+  ]},
+  nbg1: { target: 'nbg1.hetzner.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   4],
+    [4,  null,               null,                        null],
+    [5,  '213.239.252.9',    'core1.nbg.hetzner.de',     13],
+    [6,  '213.239.245.22',   'nbg1-dc3.hetzner.com',     18],
+  ]},
+  hel1: { target: 'hel1.hetzner.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '80.77.16.1',       'nordu.net',                11],
+    [5,  null,               null,                        null],
+    [6,  '195.148.127.14',   'hel-core1.hetzner.fi',     28],
+    [7,  '95.216.0.5',       'hel1-dc2.hetzner.fi',      32],
+    [8,  '135.181.0.14',     'hel1.hetzner.com',         34],
+  ]},
+  ash: { target: 'ash.hetzner.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '129.250.2.142',    'ae-7.r00.frnkge12.de',     12],
+    [5,  '129.250.5.192',    'ae-1.r21.nycmny01.us',     60],
+    [6,  null,               null,                        null],
+    [7,  '129.250.7.55',     'ae-2.r01.washdcva01.us',   71],
+    [8,  '198.32.160.130',   'equinix-dc11.ashburn.us',  78],
+    [9,  null,               null,                        null],
+    [10, '5.9.0.16',         'core-router.ash.hetzner',  84],
+    [11, '5.9.199.2',        'static.ash.hetzner.com',   91],
+    [12, '5.78.68.1',        'ash.hetzner.com',          98],
+  ]},
+  hil: { target: 'hil.hetzner.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '129.250.2.142',    'ae-7.r00.frnkge12.de',     12],
+    [5,  '129.250.4.68',     'ae-0.r22.chcgil01.us',     78],
+    [6,  null,               null,                        null],
+    [7,  '129.250.6.200',    'ae-6.r00.snjsca04.us',     99],
+    [8,  '129.250.7.109',    'xe-4-1-2.pdx-or.isp.net', 112],
+    [9,  null,               null,                        null],
+    [10, '64.71.132.54',     'ae1.cr2.sea1.zayo.net',   118],
+    [11, '216.200.0.66',     'he-pe1.hil.hetzner.com',  127],
+    [12, '65.108.0.77',      'hil-dc2.hetzner.com',     136],
+    [13, null,               null,                        null],
+    [14, '65.108.4.1',       'hil.hetzner.com',         142],
+  ]},
+  sin: { target: 'sin.hetzner.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '80.81.192.4',      'linx.net',                 18],
+    [5,  '4.69.212.193',     'te0-7-2-0.ccr21.lon01',    24],
+    [6,  null,               null,                        null],
+    [7,  '4.69.211.33',      'te0-3-0-3.ccr41.dxb01',    72],
+    [8,  '4.68.70.153',      'ae-2.r01.sin01.sg',       128],
+    [9,  null,               null,                        null],
+    [10, '203.208.182.65',   'sinet-sgix.sg',           141],
+    [11, '128.140.0.14',     'hetzner-sin-gw.sg',       155],
+    [12, null,               null,                        null],
+    [13, '5.75.0.1',         'sin-dc1-core.hetzner.sg', 162],
+    [14, null,               null,                        null],
+    [15, '5.75.240.1',       'sin-dc1-pe.hetzner.sg',   174],
+    [16, '5.75.248.14',      'sin.hetzner.com',         187],
+  ]},
+  gra: { target: 'gra.ovh.net', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '193.251.128.20',   'th2-4-1.ovh.net',          11],
+    [5,  '94.23.122.3',      'rbx-g2-a9.ovh.net',        17],
+    [6,  '5.196.64.1',       'gra-g2.ovh.net',           22],
+  ]},
+  rbx: { target: 'rbx.ovh.net', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '193.251.128.20',   'th2-4-1.ovh.net',          11],
+    [5,  null,               null,                        null],
+    [6,  '94.23.0.240',      'rbx-pe.ovh.net',           24],
+    [7,  '213.251.0.1',      'rbx.ovh.net',              28],
+  ]},
+  sbg: { target: 'sbg.ovh.net', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '193.251.128.20',   'th2-4-1.ovh.net',          11],
+    [5,  '94.23.122.7',      'sbg-g2-a9.ovh.net',        22],
+    [6,  null,               null,                        null],
+    [7,  '51.68.0.1',        'sbg.ovh.net',              31],
+  ]},
+  lon: { target: 'lon.ovh.net', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '80.81.192.55',     'linx.ovh.net',             14],
+    [5,  '193.251.255.20',   'lon-pe.ovh.net',           28],
+    [6,  null,               null,                        null],
+    [7,  '198.27.64.1',      'lon-core.ovh.net',         38],
+    [8,  '51.254.26.1',      'lon.ovh.net',              45],
+  ]},
+  waw: { target: 'waw.ovh.net', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '193.251.128.20',   'th2-4-1.ovh.net',          11],
+    [5,  '146.59.0.20',      'be100-pe01-waw.ovh.net',   34],
+    [6,  null,               null,                        null],
+    [7,  '54.36.50.1',       'waw-pe.ovh.net',           51],
+    [8,  null,               null,                        null],
+    [9,  '54.37.0.2',        'waw-core.ovh.net',         59],
+    [10, '51.210.0.1',       'waw.ovh.net',              67],
+  ]},
+  syd: { target: 'syd.ovh.net', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '80.81.192.4',      'linx.net',                 18],
+    [5,  '4.69.212.193',     'te0-7-2-0.ccr21.lon01',    24],
+    [6,  null,               null,                        null],
+    [7,  '4.68.111.225',     'ae-2.r01.lax01.us',        93],
+    [8,  '4.68.71.229',      'ae-5.r00.syd01.au',       150],
+    [9,  null,               null,                        null],
+    [10, '119.9.0.1',        'vocus-exchange.syd.net',  160],
+    [11, null,               null,                        null],
+    [12, '139.99.0.14',      'syd-dc2-core.ovh.net',    172],
+    [13, null,               null,                        null],
+    [14, '139.99.1.4',       'syd-pe.ovh.net',          183],
+    [15, null,               null,                        null],
+    [16, '139.99.128.2',     'syd-g2.ovh.net',          196],
+    [17, null,               null,                        null],
+    [18, '139.99.136.1',     'syd.ovh.net',             210],
+  ]},
+  fra: { target: 'ec2.eu-central-1.amazonaws.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '52.93.0.5',        'aws-transit.de-cix.net',   14],
+    [5,  '150.222.2.1',      'ae0.br-fcr-54a.fra6.amazon', 19],
+    [6,  null,               null,                        null],
+    [7,  '52.46.18.1',       'ae0.br-fcr-53a.fra60.amazon',27],
+    [8,  '52.93.128.5',      's3.dxb60.amazon.com',      33],
+    [9,  '3.64.0.1',         'ec2.eu-central-1.amazonaws.com', 41],
+  ]},
+  iad: { target: 'ec2.us-east-1.amazonaws.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '129.250.2.142',    'ae-7.r00.frnkge12.de',     12],
+    [5,  '129.250.5.192',    'ae-1.r21.nycmny01.us',     60],
+    [6,  null,               null,                        null],
+    [7,  '129.250.7.55',     'ae-2.r01.washdcva01.us',   71],
+    [8,  '198.32.160.130',   'equinix-dc11.ashburn.us',  76],
+    [9,  '52.93.28.1',       'aws-bbr.equinix.us',       78],
+    [10, '150.222.6.4',      'ae0.br-fcr-52a.iad60.amazon',80],
+    [11, null,               null,                        null],
+    [12, '52.46.18.9',       's3.iad60.amazon.com',      84],
+    [13, '34.192.0.1',       'ec2.us-east-1.amazonaws.com',89],
+  ]},
+  cmh: { target: 'ec2.us-east-2.amazonaws.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '129.250.2.142',    'ae-7.r00.frnkge12.de',     12],
+    [5,  '129.250.5.192',    'ae-1.r21.nycmny01.us',     60],
+    [6,  null,               null,                        null],
+    [7,  '129.250.7.55',     'ae-2.r01.washdcva01.us',   71],
+    [8,  '129.250.6.145',    'ae-1.r00.clevet01.us',     78],
+    [9,  '64.86.127.145',    'zayo-cmh.Columbus.us',     82],
+    [10, '52.93.52.1',       'aws-bbr.columbus.us',      84],
+    [11, '150.222.4.8',      'ae0.br-fcr-52a.cmh60.amazon',86],
+    [12, null,               null,                        null],
+    [13, '52.46.20.1',       's3.cmh60.amazon.com',      90],
+    [14, '18.224.0.1',       'ec2.us-east-2.amazonaws.com',95],
+  ]},
+  sfo: { target: 'ec2.us-west-1.amazonaws.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '129.250.2.142',    'ae-7.r00.frnkge12.de',     12],
+    [5,  '129.250.4.68',     'ae-0.r22.chcgil01.us',     78],
+    [6,  null,               null,                        null],
+    [7,  '129.250.6.200',    'ae-6.r00.snjsca04.us',     99],
+    [8,  null,               null,                        null],
+    [9,  '64.86.127.205',    'zayo-sfo.us',              107],
+    [10, '52.93.76.1',       'aws-bbr.sfo.us',           111],
+    [11, '150.222.10.4',     'ae0.br-fcr-53a.sfo20.amazon',116],
+    [12, null,               null,                        null],
+    [13, '52.46.22.1',       's3.sfo20.amazon.com',      124],
+    [14, null,               null,                        null],
+    [15, '13.52.0.1',        'ec2.us-west-1.amazonaws.com',131],
+  ]},
+  nrt: { target: 'ec2.ap-northeast-1.amazonaws.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '80.81.192.4',      'linx.net',                 18],
+    [5,  '4.69.212.193',     'te0-7-2-0.ccr21.lon01',    24],
+    [6,  null,               null,                        null],
+    [7,  '4.68.111.225',     'ae-2.r01.lax01.us',        93],
+    [8,  '4.68.71.5',        'ae-5.r00.nrt01.jp',       138],
+    [9,  null,               null,                        null],
+    [10, '210.173.176.2',    'ix.nrt.jp',               145],
+    [11, '52.93.92.1',       'aws-bbr.nrt.jp',          149],
+    [12, '150.222.22.4',     'ae0.br-fcr-52a.nrt22.amazon',153],
+    [13, null,               null,                        null],
+    [14, '52.46.30.1',       's3.nrt22.amazon.com',     159],
+    [15, null,               null,                        null],
+    [16, '13.112.0.1',       'nrt-core.amazon.com',     166],
+    [17, '35.72.0.1',        'ec2.ap-northeast-1.amazonaws.com',178],
+  ]},
+  gru: { target: 'ec2.sa-east-1.amazonaws.com', hops: [
+    [1,  '192.168.1.1',      'gateway.home',              1],
+    [2,  '100.77.0.1',       'cgnat.isp.net',             2],
+    [3,  '195.50.4.2',       'de-cix-fra.backbone.net',   5],
+    [4,  '129.250.2.142',    'ae-7.r00.frnkge12.de',     12],
+    [5,  '129.250.5.192',    'ae-1.r21.nycmny01.us',     60],
+    [6,  null,               null,                        null],
+    [7,  '129.250.7.110',    'ae-4.r01.miaflus01.us',    78],
+    [8,  '129.250.6.55',     'ae-9.r00.grubrsp01.br',   128],
+    [9,  null,               null,                        null],
+    [10, '177.75.0.6',       'gru-ix.equinix.br',       141],
+    [11, '52.93.112.1',      'aws-bbr.gru.br',          148],
+    [12, '150.222.28.4',     'ae0.br-fcr-53a.gru3.amazon',155],
+    [13, null,               null,                        null],
+    [14, '52.46.36.1',       's3.gru3.amazon.com',      164],
+    [15, null,               null,                        null],
+    [16, '18.228.0.1',       'gru-core.amazon.com',     178],
+    [17, null,               null,                        null],
+    [18, '54.232.0.1',       'gru-pe.sa-east-1.amazon', 196],
+    [19, '15.228.0.1',       'ec2.sa-east-1.amazonaws.com',220],
+  ]},
+};
+
+// ─────────────────────────────────────────────────
+// Traceroute expand / collapse
+// ─────────────────────────────────────────────────
+function toggleTrace(row) {
+  const id = row.dataset.id;
+  const traceRow = document.getElementById('trace-' + id);
+  const panel    = document.getElementById('panel-' + id);
+  const isOpen   = row.classList.contains('open');
+
+  // Close all open rows
+  document.querySelectorAll('.host-row.open').forEach(r => {
+    r.classList.remove('open');
+    const rid = r.dataset.id;
+    document.getElementById('trace-' + rid).classList.remove('open');
+    document.getElementById('panel-' + rid).style.maxHeight = '0';
+  });
+
+  if (!isOpen) {
+    row.classList.add('open');
+    traceRow.classList.add('open');
+    // Render content if not yet rendered
+    if (!panel.dataset.rendered) {
+      panel.innerHTML = buildTraceHTML(TRACES[id]);
+      panel.dataset.rendered = '1';
+    }
+    // Trigger height animation after a tick
+    requestAnimationFrame(() => {
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+    });
+  }
+}
+
+function buildTraceHTML(data) {
+  if (!data) return '';
+  const hops = data.hops;
+
+  const hopRows = hops.map((h, i) => {
+    const [n, ip, host, rtt] = h;
+    const isTimeout = rtt === null;
+    const prev = i > 0 ? hops[i - 1][3] : 0;
+    const delta = (!isTimeout && prev !== null) ? rtt - prev : null;
+
+    let dotClass = 'hop-dot-timeout';
+    let rttClass = 'hop-rtt-timeout';
+    let rttLabel = '* * *';
+    if (!isTimeout) {
+      if (rtt < 50)       { dotClass = 'hop-dot-good';   rttClass = 'hop-rtt-good'; }
+      else if (rtt < 150) { dotClass = 'hop-dot-medium'; rttClass = 'hop-rtt-medium'; }
+      else                { dotClass = 'hop-dot-bad';    rttClass = 'hop-rtt-bad'; }
+      rttLabel = rtt + 'ms';
+    }
+
+    let deltaHTML = '';
+    if (delta !== null) {
+      const sign = delta >= 0 ? '+' : '';
+      const cls  = delta > 30 ? 'hop-delta-high' : '';
+      deltaHTML = `<span class="hop-delta ${cls}">${sign}${delta}ms</span>`;
+    } else {
+      deltaHTML = `<span class="hop-delta">—</span>`;
+    }
+
+    const hostLabel = isTimeout
+      ? '<span class="hop-host hop-host-timeout">Request timeout</span>'
+      : `<span class="hop-host">${host}</span><span class="hop-ip">${ip}</span>`;
+
+    const isLast = i === hops.length - 1;
+    const lineHTML = isLast ? '' : `<div class="hop-line"></div>`;
+
+    return `
+      <div class="trace-hop">
+        <span class="hop-num">${n}</span>
+        <div class="hop-connector">
+          <div class="hop-dot ${dotClass}"></div>
+          ${lineHTML}
+        </div>
+        ${hostLabel}
+        <span class="hop-rtt ${rttClass}">${rttLabel}</span>
+        ${deltaHTML}
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="trace-inner">
+      <div class="trace-heading">
+        <span class="trace-heading-label">Traceroute</span>
+        <span class="trace-heading-target">${data.target}</span>
+        <div class="trace-heading-line"></div>
+        <span style="font-size:9px;color:var(--text-muted);">${hops.length} hops · ${hops.filter(h=>h[3]!==null).length} responding</span>
+      </div>
+      <div class="trace-hops">${hopRows}</div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────────
+// View switching
+// ─────────────────────────────────────────────────
+function switchView(view, btn) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  if (view === 'all') {
+    activeFilter = 'all';
+    ['hetzner','ovh','aws'].forEach(p => document.getElementById('block-' + p).style.display = '');
+  }
+  renderCustomHosts();
+}
+
+// ─────────────────────────────────────────────────
+// Provider filter
+// ─────────────────────────────────────────────────
+let activeFilter = 'all';
+function filterProvider(provider) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-all').classList.add('active');
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-all').classList.add('active');
+  activeFilter = provider;
+  ['hetzner','ovh','aws'].forEach(p => {
+    document.getElementById('block-' + p).style.display = (p === provider) ? '' : 'none';
+  });
+  document.getElementById('searchInput').value = '';
+  filterHosts('');
+}
+
+// ─────────────────────────────────────────────────
+// Search
+// ─────────────────────────────────────────────────
+function filterHosts(query) {
+  const q = query.trim().toLowerCase();
+  if (q) ['hetzner','ovh','aws'].forEach(p => document.getElementById('block-' + p).style.display = '');
+  document.querySelectorAll('#view-all [data-search]').forEach(row => {
+    row.classList.toggle('row-hidden', q !== '' && !row.dataset.search.toLowerCase().includes(q));
+    // also hide the paired trace row
+    const id = row.dataset.id;
+    if (id) {
+      const tr = document.getElementById('trace-' + id);
+      if (tr) tr.classList.toggle('row-hidden', q !== '' && !row.dataset.search.toLowerCase().includes(q));
+    }
+  });
+  ['hetzner','ovh','aws'].forEach(p => {
+    const block = document.getElementById('block-' + p);
+    if (!block) return;
+    const visible = [...block.querySelectorAll('[data-search]')].some(r => !r.classList.contains('row-hidden'));
+    block.style.display = q ? (visible ? '' : 'none') : (activeFilter === 'all' || activeFilter === p ? '' : 'none');
+  });
+}
+
+// ─────────────────────────────────────────────────
+// Custom Hosts
+// ─────────────────────────────────────────────────
+let customHosts = [
+  { id: 1, name: 'Home Lab',    location: 'São Paulo, Brazil',       host: '192.168.1.10' },
+  { id: 2, name: 'Work Proxy',  location: 'Amsterdam, Netherlands',  host: 'proxy.internal.corp' },
+  { id: 3, name: 'Game Server', location: 'Miami, USA',              host: '198.51.100.42' },
+];
+let nextId = 4;
+let pendingDeleteId = null;
+const ICONS = ['🖥','🌐','🔧','⚡','🛡','📡','🔌','💻'];
+
+function renderCustomHosts() {
+  const list = document.getElementById('chList');
+  document.getElementById('chCount').textContent = customHosts.length;
+  document.getElementById('hostCount').textContent = 18 + customHosts.length;
+  if (!customHosts.length) {
+    list.innerHTML = `<div class="ch-empty"><div class="ch-empty-icon">📡</div><div class="ch-empty-text">No custom hosts yet</div><div class="ch-empty-sub">Click "Add Host" to monitor your own endpoints</div></div>`;
+    return;
+  }
+  list.innerHTML = customHosts.map((h, i) => `
+    <div class="ch-row" id="chrow-${h.id}">
+      <div class="ch-row-icon">${ICONS[i % ICONS.length]}</div>
+      <div class="ch-row-info">
+        <div class="ch-row-name">${esc(h.name)}</div>
+        <div class="ch-row-meta">${esc(h.location)} · ${esc(h.host)}</div>
+      </div>
+      <div class="ch-row-actions">
+        <button class="btn-icon btn-icon-edit" title="Edit"   onclick="openEditModal(${h.id})">✏</button>
+        <button class="btn-icon btn-icon-del"  title="Remove" onclick="openDeleteModal(${h.id})">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function openAddModal() {
+  document.getElementById('modalEditTitle').textContent = 'Add Custom Host';
+  document.getElementById('editHostId').value = '';
+  ['fieldName','fieldLocation','fieldHost'].forEach(id => { document.getElementById(id).value = ''; document.getElementById(id).style.borderColor = ''; });
+  openModal('modalEdit');
+  setTimeout(() => document.getElementById('fieldName').focus(), 60);
+}
+
+function openEditModal(id) {
+  const h = customHosts.find(x => x.id === id);
+  if (!h) return;
+  document.getElementById('modalEditTitle').textContent = 'Edit Host';
+  document.getElementById('editHostId').value    = id;
+  document.getElementById('fieldName').value     = h.name;
+  document.getElementById('fieldLocation').value = h.location;
+  document.getElementById('fieldHost').value     = h.host;
+  ['fieldName','fieldLocation','fieldHost'].forEach(id => document.getElementById(id).style.borderColor = '');
+  openModal('modalEdit');
+  setTimeout(() => document.getElementById('fieldName').focus(), 60);
+}
+
+function saveHost() {
+  const id       = document.getElementById('editHostId').value;
+  const name     = document.getElementById('fieldName').value.trim();
+  const location = document.getElementById('fieldLocation').value.trim();
+  const host     = document.getElementById('fieldHost').value.trim();
+  let valid = true;
+  if (!name) { document.getElementById('fieldName').style.borderColor = 'rgba(248,113,113,0.55)'; valid = false; }
+  if (!host) { document.getElementById('fieldHost').style.borderColor = 'rgba(248,113,113,0.55)'; valid = false; }
+  if (!valid) return;
+  if (id) {
+    const h = customHosts.find(x => x.id === parseInt(id));
+    if (h) { h.name = name; h.location = location; h.host = host; }
+  } else {
+    customHosts.push({ id: nextId++, name, location, host });
+  }
+  closeModal('modalEdit');
+  renderCustomHosts();
+}
+
+function openDeleteModal(id) {
+  pendingDeleteId = id;
+  const h = customHosts.find(x => x.id === id);
+  document.getElementById('confirmHostName').textContent = h ? `"${h.name}" · ${h.host}` : '';
+  openModal('modalDelete');
+}
+
+function confirmDelete() {
+  customHosts = customHosts.filter(x => x.id !== pendingDeleteId);
+  pendingDeleteId = null;
+  closeModal('modalDelete');
+  renderCustomHosts();
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) closeModal(o.id); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
+});
+['fieldName','fieldHost'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function() { this.style.borderColor = ''; });
+});
+
+renderCustomHosts();
+
+// ─────────────────────────────────────────────────
+// Settings
+// ─────────────────────────────────────────────────
+let settings = { rounds: 5 };
+
+function stepRounds(delta) {
+  settings.rounds = Math.min(20, Math.max(1, settings.rounds + delta));
+  document.getElementById('roundsVal').textContent = settings.rounds;
+}
+
+function saveSettings() {
+  closeModal('modalSettings');
+}
+</script>
+</body>
+</html>

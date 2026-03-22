@@ -1,0 +1,393 @@
+{
+  "name": "Oracle Cloud",
+  "website": "https://www.oracle.com/cloud/",
+  "hosts": [
+    {
+      "city": "Sydney",
+      "country": "Australia",
+      "regionId": "ap-sydney-1",
+      "hostname": "objectstorage.ap-sydney-1.oraclecloud.com",
+      "continent": "Oceania",
+      "latitude": -33.8678,
+      "longitude": 151.2073
+    },
+    {
+      "city": "Melbourne",
+      "country": "Australia",
+      "regionId": "ap-melbourne-1",
+      "hostname": "objectstorage.ap-melbourne-1.oraclecloud.com",
+      "continent": "Oceania",
+      "latitude": -37.814,
+      "longitude": 144.9633
+    },
+    {
+      "city": "São Paulo",
+      "country": "Brazil",
+      "regionId": "sa-saopaulo-1",
+      "hostname": "objectstorage.sa-saopaulo-1.oraclecloud.com",
+      "continent": "South America",
+      "latitude": -23.5475,
+      "longitude": -46.6361
+    },
+    {
+      "city": "Vinhedo",
+      "country": "Brazil",
+      "regionId": "sa-vinhedo-1",
+      "hostname": "objectstorage.sa-vinhedo-1.oraclecloud.com",
+      "continent": "South America",
+      "latitude": -23.0297,
+      "longitude": -46.9753
+    },
+    {
+      "city": "Montreal",
+      "country": "Canada",
+      "regionId": "ca-montreal-1",
+      "hostname": "objectstorage.ca-montreal-1.oraclecloud.com",
+      "continent": "North America",
+      "latitude": 45.5088,
+      "longitude": -73.5878
+    },
+    {
+      "city": "Toronto",
+      "country": "Canada",
+      "regionId": "ca-toronto-1",
+      "hostname": "objectstorage.ca-toronto-1.oraclecloud.com",
+      "continent": "North America",
+      "latitude": 43.7064,
+      "longitude": -79.3986
+    },
+    {
+      "city": "Santiago",
+      "country": "Chile",
+      "regionId": "sa-santiago-1",
+      "hostname": "objectstorage.sa-santiago-1.oraclecloud.com",
+      "continent": "South America",
+      "latitude": 19.4508,
+      "longitude": -70.6947
+    },
+    {
+      "city": "Valparaiso",
+      "country": "Chile",
+      "regionId": "sa-valparaiso-1",
+      "hostname": "objectstorage.sa-valparaiso-1.oraclecloud.com",
+      "continent": "South America",
+      "latitude": -33.036,
+      "longitude": -71.6296
+    },
+    {
+      "city": "Bogota",
+      "country": "Colombia",
+      "regionId": "sa-bogota-1",
+      "hostname": "objectstorage.sa-bogota-1.oraclecloud.com",
+      "continent": "South America",
+      "latitude": 4.6097,
+      "longitude": -74.0817
+    },
+    {
+      "city": "Paris",
+      "country": "France",
+      "regionId": "eu-paris-1",
+      "hostname": "objectstorage.eu-paris-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 48.8534,
+      "longitude": 2.3488
+    },
+    {
+      "city": "Marseille",
+      "country": "France",
+      "regionId": "eu-marseille-1",
+      "hostname": "objectstorage.eu-marseille-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 43.297,
+      "longitude": 5.3811
+    },
+    {
+      "city": "Frankfurt",
+      "country": "Germany",
+      "regionId": "eu-frankfurt-1",
+      "hostname": "objectstorage.eu-frankfurt-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 52.3471,
+      "longitude": 14.5506
+    },
+    {
+      "city": "Berlin",
+      "country": "Germany",
+      "regionId": "eu-berlin-1",
+      "hostname": "objectstorage.eu-berlin-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 52.5244,
+      "longitude": 13.4105
+    },
+    {
+      "city": "Madrid",
+      "country": "Spain",
+      "regionId": "eu-madrid-1",
+      "hostname": "objectstorage.eu-madrid-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 40.4165,
+      "longitude": -3.7026
+    },
+    {
+      "city": "Madrid",
+      "country": "Spain",
+      "regionId": "eu-madrid-3",
+      "hostname": "objectstorage.eu-madrid-3.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 40,
+      "longitude": -4
+    },
+    {
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "regionId": "eu-amsterdam-1",
+      "hostname": "objectstorage.eu-amsterdam-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 52.374,
+      "longitude": 4.8897
+    },
+    {
+      "city": "Milan",
+      "country": "Italy",
+      "regionId": "eu-milan-1",
+      "hostname": "objectstorage.eu-milan-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 45.4643,
+      "longitude": 9.1895
+    },
+    {
+      "city": "Zurich",
+      "country": "Switzerland",
+      "regionId": "eu-zurich-1",
+      "hostname": "objectstorage.eu-zurich-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 47.3667,
+      "longitude": 8.55
+    },
+    {
+      "city": "Stockholm",
+      "country": "Sweden",
+      "regionId": "eu-stockholm-1",
+      "hostname": "objectstorage.eu-stockholm-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 59.3294,
+      "longitude": 18.0687
+    },
+    {
+      "city": "Kragujevac",
+      "country": "Serbia",
+      "regionId": "eu-jovanovac-1",
+      "hostname": "objectstorage.eu-jovanovac-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 44.0167,
+      "longitude": 20.9167
+    },
+    {
+      "city": "Hyderabad",
+      "country": "India",
+      "regionId": "ap-hyderabad-1",
+      "hostname": "objectstorage.ap-hyderabad-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 17.384,
+      "longitude": 78.4564
+    },
+    {
+      "city": "Mumbai",
+      "country": "India",
+      "regionId": "ap-mumbai-1",
+      "hostname": "objectstorage.ap-mumbai-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 19.0728,
+      "longitude": 72.8826
+    },
+    {
+      "city": "Osaka",
+      "country": "Japan",
+      "regionId": "ap-osaka-1",
+      "hostname": "objectstorage.ap-osaka-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 34.6938,
+      "longitude": 135.5011
+    },
+    {
+      "city": "Tokyo",
+      "country": "Japan",
+      "regionId": "ap-tokyo-1",
+      "hostname": "objectstorage.ap-tokyo-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 35.6895,
+      "longitude": 139.6917
+    },
+    {
+      "city": "Seoul",
+      "country": "South Korea",
+      "regionId": "ap-seoul-1",
+      "hostname": "objectstorage.ap-seoul-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 37.566,
+      "longitude": 126.9784
+    },
+    {
+      "city": "Chuncheon",
+      "country": "South Korea",
+      "regionId": "ap-chuncheon-1",
+      "hostname": "objectstorage.ap-chuncheon-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 37.8747,
+      "longitude": 127.7342
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "regionId": "ap-singapore-1",
+      "hostname": "objectstorage.ap-singapore-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 1.2897,
+      "longitude": 103.8501
+    },
+    {
+      "city": "Singapore West",
+      "country": "Singapore",
+      "regionId": "ap-singapore-2",
+      "hostname": "objectstorage.ap-singapore-2.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 1.2897,
+      "longitude": 103.8501
+    },
+    {
+      "city": "Kulai",
+      "country": "Malaysia",
+      "regionId": "ap-kulai-2",
+      "hostname": "objectstorage.ap-kulai-2.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 1.6561,
+      "longitude": 103.6032
+    },
+    {
+      "city": "Monterrey",
+      "country": "Mexico",
+      "regionId": "mx-monterrey-1",
+      "hostname": "objectstorage.mx-monterrey-1.oraclecloud.com",
+      "continent": "North America",
+      "latitude": 25.6751,
+      "longitude": -100.3185
+    },
+    {
+      "city": "Queretaro",
+      "country": "Mexico",
+      "regionId": "mx-queretaro-1",
+      "hostname": "objectstorage.mx-queretaro-1.oraclecloud.com",
+      "continent": "North America",
+      "latitude": 15.8375,
+      "longitude": -92.7577
+    },
+    {
+      "city": "Casablanca",
+      "country": "Morocco",
+      "regionId": "af-casablanca-1",
+      "hostname": "objectstorage.af-casablanca-1.oraclecloud.com",
+      "continent": "Africa",
+      "latitude": 33.5883,
+      "longitude": -7.6114
+    },
+    {
+      "city": "Johannesburg",
+      "country": "South Africa",
+      "regionId": "af-johannesburg-1",
+      "hostname": "objectstorage.af-johannesburg-1.oraclecloud.com",
+      "continent": "Africa",
+      "latitude": -26.2023,
+      "longitude": 28.0436
+    },
+    {
+      "city": "Riyadh",
+      "country": "Saudi Arabia",
+      "regionId": "me-riyadh-1",
+      "hostname": "objectstorage.me-riyadh-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 24.6877,
+      "longitude": 46.7219
+    },
+    {
+      "city": "Jeddah",
+      "country": "Saudi Arabia",
+      "regionId": "me-jeddah-1",
+      "hostname": "objectstorage.me-jeddah-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 21.4901,
+      "longitude": 39.1862
+    },
+    {
+      "city": "Abu Dhabi",
+      "country": "United Arab Emirates",
+      "regionId": "me-abudhabi-1",
+      "hostname": "objectstorage.me-abudhabi-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 24.4512,
+      "longitude": 54.397
+    },
+    {
+      "city": "Dubai",
+      "country": "United Arab Emirates",
+      "regionId": "me-dubai-1",
+      "hostname": "objectstorage.me-dubai-1.oraclecloud.com",
+      "continent": "Asia",
+      "latitude": 25.0772,
+      "longitude": 55.3093
+    },
+    {
+      "city": "London",
+      "country": "United Kingdom",
+      "regionId": "uk-london-1",
+      "hostname": "objectstorage.uk-london-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 51.5085,
+      "longitude": -0.1257
+    },
+    {
+      "city": "Cardiff",
+      "country": "United Kingdom",
+      "regionId": "uk-cardiff-1",
+      "hostname": "objectstorage.uk-cardiff-1.oraclecloud.com",
+      "continent": "Europe",
+      "latitude": 51.48,
+      "longitude": -3.18
+    },
+    {
+      "city": "Ashburn",
+      "country": "United States",
+      "regionId": "us-ashburn-1",
+      "hostname": "objectstorage.us-ashburn-1.oraclecloud.com",
+      "continent": "North America",
+      "latitude": 31.706,
+      "longitude": -83.6532
+    },
+    {
+      "city": "Chicago",
+      "country": "United States",
+      "regionId": "us-chicago-1",
+      "hostname": "objectstorage.us-chicago-1.oraclecloud.com",
+      "continent": "North America",
+      "latitude": 41.85,
+      "longitude": -87.65
+    },
+    {
+      "city": "Phoenix",
+      "country": "United States",
+      "regionId": "us-phoenix-1",
+      "hostname": "objectstorage.us-phoenix-1.oraclecloud.com",
+      "continent": "North America",
+      "latitude": 33.4484,
+      "longitude": -112.074
+    },
+    {
+      "city": "San Jose",
+      "country": "United States",
+      "regionId": "us-sanjose-1",
+      "hostname": "objectstorage.us-sanjose-1.oraclecloud.com",
+      "continent": "North America",
+      "latitude": 37.3394,
+      "longitude": -121.895
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "Scaleway",
+  "website": "https://www.scaleway.com",
+  "hosts": [
+    {
+      "city": "Paris",
+      "country": "France",
+      "continent": "Europe",
+      "regionId": "fr-par",
+      "hostname": "s3.fr-par.scw.cloud",
+      "latitude": 48.86,
+      "longitude": 2.35
+    },
+    {
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "continent": "Europe",
+      "regionId": "nl-ams",
+      "hostname": "s3.nl-ams.scw.cloud",
+      "latitude": 52.37,
+      "longitude": 4.9
+    },
+    {
+      "city": "Warsaw",
+      "country": "Poland",
+      "continent": "Europe",
+      "regionId": "pl-waw",
+      "hostname": "s3.pl-waw.scw.cloud",
+      "latitude": 52.23,
+      "longitude": 21.01
+    }
+  ]
+}

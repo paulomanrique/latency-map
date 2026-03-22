@@ -1,0 +1,186 @@
+{
+  "name": "Linode",
+  "website": "https://www.linode.com",
+  "hosts": [
+    {
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "regionId": "nl-ams",
+      "hostname": "speedtest.amsterdam.linode.com",
+      "continent": "Europe",
+      "latitude": 52.374,
+      "longitude": 4.8897
+    },
+    {
+      "city": "Atlanta",
+      "country": "United States",
+      "regionId": "us-southeast",
+      "hostname": "speedtest.atlanta.linode.com",
+      "continent": "North America",
+      "latitude": 33.749,
+      "longitude": -84.388
+    },
+    {
+      "city": "Chicago",
+      "country": "United States",
+      "regionId": "us-ord",
+      "hostname": "speedtest.chicago.linode.com",
+      "continent": "North America",
+      "latitude": 41.85,
+      "longitude": -87.65
+    },
+    {
+      "city": "Chennai",
+      "country": "India",
+      "regionId": "in-maa",
+      "hostname": "speedtest.chennai.linode.com",
+      "continent": "Asia",
+      "latitude": 13.0878,
+      "longitude": 80.2785
+    },
+    {
+      "city": "Dallas",
+      "country": "United States",
+      "regionId": "us-central",
+      "hostname": "speedtest.dallas.linode.com",
+      "continent": "North America",
+      "latitude": 32.7831,
+      "longitude": -96.8067
+    },
+    {
+      "city": "Frankfurt",
+      "country": "Germany",
+      "regionId": "eu-central",
+      "hostname": "speedtest.frankfurt.linode.com",
+      "continent": "Europe",
+      "latitude": 52.3471,
+      "longitude": 14.5506
+    },
+    {
+      "city": "Fremont",
+      "country": "United States",
+      "regionId": "us-west",
+      "hostname": "speedtest.fremont.linode.com",
+      "continent": "North America",
+      "latitude": 37.5483,
+      "longitude": -121.9886
+    },
+    {
+      "city": "Jakarta",
+      "country": "Indonesia",
+      "regionId": "id-cgk",
+      "hostname": "speedtest.jakarta.linode.com",
+      "continent": "Asia",
+      "latitude": -6.2146,
+      "longitude": 106.8451
+    },
+    {
+      "city": "London",
+      "country": "United Kingdom",
+      "regionId": "eu-west",
+      "hostname": "speedtest.london.linode.com",
+      "continent": "Europe",
+      "latitude": 51.5085,
+      "longitude": -0.1257
+    },
+    {
+      "city": "Madrid",
+      "country": "Spain",
+      "regionId": "es-mad",
+      "hostname": "speedtest.madrid.linode.com",
+      "continent": "Europe",
+      "latitude": 40.4165,
+      "longitude": -3.7026
+    },
+    {
+      "city": "Miami",
+      "country": "United States",
+      "regionId": "us-mia",
+      "hostname": "speedtest.miami.linode.com",
+      "continent": "North America",
+      "latitude": 25.7743,
+      "longitude": -80.1937
+    },
+    {
+      "city": "Newark",
+      "country": "United States",
+      "regionId": "us-east",
+      "hostname": "speedtest.newark.linode.com",
+      "continent": "North America",
+      "latitude": 40.7357,
+      "longitude": -74.1724
+    },
+    {
+      "city": "Osaka",
+      "country": "Japan",
+      "regionId": "jp-osa",
+      "hostname": "speedtest.osaka.linode.com",
+      "continent": "Asia",
+      "latitude": 34.6938,
+      "longitude": 135.5011
+    },
+    {
+      "city": "Paris",
+      "country": "France",
+      "regionId": "fr-par",
+      "hostname": "speedtest.paris.linode.com",
+      "continent": "Europe",
+      "latitude": 48.8534,
+      "longitude": 2.3488
+    },
+    {
+      "city": "São Paulo",
+      "country": "Brazil",
+      "regionId": "br-gru",
+      "hostname": "speedtest.sao-paulo.linode.com",
+      "continent": "South America",
+      "latitude": -23.5475,
+      "longitude": -46.6361
+    },
+    {
+      "city": "Seattle",
+      "country": "United States",
+      "regionId": "us-sea",
+      "hostname": "speedtest.seattle.linode.com",
+      "continent": "North America",
+      "latitude": 47.6062,
+      "longitude": -122.3321
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "regionId": "ap-south",
+      "hostname": "speedtest.singapore.linode.com",
+      "continent": "Asia",
+      "latitude": 1.2897,
+      "longitude": 103.8501
+    },
+    {
+      "city": "Stockholm",
+      "country": "Sweden",
+      "regionId": "se-sto",
+      "hostname": "speedtest.stockholm.linode.com",
+      "continent": "Europe",
+      "latitude": 59.3294,
+      "longitude": 18.0687
+    },
+    {
+      "city": "Sydney",
+      "country": "Australia",
+      "regionId": "ap-southeast",
+      "hostname": "speedtest.syd1.linode.com",
+      "continent": "Oceania",
+      "latitude": -33.8678,
+      "longitude": 151.2073
+    },
+    {
+      "city": "Washington, DC",
+      "country": "United States",
+      "regionId": "us-iad",
+      "hostname": "speedtest.washington.linode.com",
+      "continent": "North America",
+      "latitude": 39.76,
+      "longitude": -98.5
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "name": "OVHcloud",
+  "website": "https://www.ovhcloud.com",
+  "hosts": [
+    {
+      "city": "Gravelines",
+      "country": "France",
+      "regionId": "gra",
+      "hostname": "s3.gra.perf.cloud.ovh.net",
+      "continent": "Europe",
+      "latitude": 50.9865,
+      "longitude": 2.1281
+    },
+    {
+      "city": "Roubaix",
+      "country": "France",
+      "regionId": "rbx",
+      "hostname": "s3.rbx.perf.cloud.ovh.net",
+      "continent": "Europe",
+      "latitude": 50.6942,
+      "longitude": 3.1746
+    },
+    {
+      "city": "Strasbourg",
+      "country": "France",
+      "regionId": "sbg",
+      "hostname": "s3.sbg.perf.cloud.ovh.net",
+      "continent": "Europe",
+      "latitude": 48.5839,
+      "longitude": 7.7455
+    },
+    {
+      "city": "Warsaw",
+      "country": "Poland",
+      "regionId": "waw",
+      "hostname": "s3.waw.perf.cloud.ovh.net",
+      "continent": "Europe",
+      "latitude": 52.2298,
+      "longitude": 21.0118
+    },
+    {
+      "city": "Beauharnois",
+      "country": "Canada",
+      "regionId": "bhs",
+      "hostname": "s3.bhs.perf.cloud.ovh.net",
+      "continent": "North America",
+      "latitude": 45.3134,
+      "longitude": -73.8725
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "regionId": "sgp",
+      "hostname": "s3.sgp.perf.cloud.ovh.net",
+      "continent": "Asia",
+      "latitude": 1.2897,
+      "longitude": 103.8501
+    }
+  ]
+}

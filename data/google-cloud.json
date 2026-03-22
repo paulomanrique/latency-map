@@ -1,0 +1,393 @@
+{
+  "name": "Google Cloud",
+  "website": "https://cloud.google.com",
+  "hosts": [
+    {
+      "city": "Johannesburg",
+      "country": "South Africa",
+      "regionId": "africa-south1",
+      "hostname": "storage.africa-south1.rep.googleapis.com",
+      "continent": "Africa",
+      "latitude": -26.2023,
+      "longitude": 28.0436
+    },
+    {
+      "city": "Taipei",
+      "country": "Taiwan",
+      "regionId": "asia-east1",
+      "hostname": "storage.asia-east1.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 25.0531,
+      "longitude": 121.5264
+    },
+    {
+      "city": "Hong Kong",
+      "country": "Hong Kong",
+      "regionId": "asia-east2",
+      "hostname": "storage.asia-east2.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 22.2783,
+      "longitude": 114.1747
+    },
+    {
+      "city": "Tokyo",
+      "country": "Japan",
+      "regionId": "asia-northeast1",
+      "hostname": "storage.asia-northeast1.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 35.6895,
+      "longitude": 139.6917
+    },
+    {
+      "city": "Osaka",
+      "country": "Japan",
+      "regionId": "asia-northeast2",
+      "hostname": "storage.asia-northeast2.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 34.6938,
+      "longitude": 135.5011
+    },
+    {
+      "city": "Seoul",
+      "country": "South Korea",
+      "regionId": "asia-northeast3",
+      "hostname": "storage.asia-northeast3.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 37.566,
+      "longitude": 126.9784
+    },
+    {
+      "city": "Mumbai",
+      "country": "India",
+      "regionId": "asia-south1",
+      "hostname": "storage.asia-south1.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 19.0728,
+      "longitude": 72.8826
+    },
+    {
+      "city": "Delhi",
+      "country": "India",
+      "regionId": "asia-south2",
+      "hostname": "storage.asia-south2.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 28.6519,
+      "longitude": 77.2315
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "regionId": "asia-southeast1",
+      "hostname": "storage.asia-southeast1.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 1.2897,
+      "longitude": 103.8501
+    },
+    {
+      "city": "Jakarta",
+      "country": "Indonesia",
+      "regionId": "asia-southeast2",
+      "hostname": "storage.asia-southeast2.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": -6.2146,
+      "longitude": 106.8451
+    },
+    {
+      "city": "Bangkok",
+      "country": "Thailand",
+      "regionId": "asia-southeast3",
+      "hostname": "storage.asia-southeast3.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 13.754,
+      "longitude": 100.5014
+    },
+    {
+      "city": "Sydney",
+      "country": "Australia",
+      "regionId": "australia-southeast1",
+      "hostname": "storage.australia-southeast1.rep.googleapis.com",
+      "continent": "Oceania",
+      "latitude": -33.8678,
+      "longitude": 151.2073
+    },
+    {
+      "city": "Melbourne",
+      "country": "Australia",
+      "regionId": "australia-southeast2",
+      "hostname": "storage.australia-southeast2.rep.googleapis.com",
+      "continent": "Oceania",
+      "latitude": -37.814,
+      "longitude": 144.9633
+    },
+    {
+      "city": "Warsaw",
+      "country": "Poland",
+      "regionId": "europe-central2",
+      "hostname": "storage.europe-central2.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 52.2298,
+      "longitude": 21.0118
+    },
+    {
+      "city": "Hamina",
+      "country": "Finland",
+      "regionId": "europe-north1",
+      "hostname": "storage.europe-north1.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 60.5697,
+      "longitude": 27.1979
+    },
+    {
+      "city": "Stockholm",
+      "country": "Sweden",
+      "regionId": "europe-north2",
+      "hostname": "storage.europe-north2.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 59.3294,
+      "longitude": 18.0687
+    },
+    {
+      "city": "Madrid",
+      "country": "Spain",
+      "regionId": "europe-southwest1",
+      "hostname": "storage.europe-southwest1.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 40.4165,
+      "longitude": -3.7026
+    },
+    {
+      "city": "St. Ghislain",
+      "country": "Belgium",
+      "regionId": "europe-west1",
+      "hostname": "storage.europe-west1.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 50.4482,
+      "longitude": 3.8189
+    },
+    {
+      "city": "London",
+      "country": "United Kingdom",
+      "regionId": "europe-west2",
+      "hostname": "storage.europe-west2.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 51.5085,
+      "longitude": -0.1257
+    },
+    {
+      "city": "Frankfurt",
+      "country": "Germany",
+      "regionId": "europe-west3",
+      "hostname": "storage.europe-west3.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 52.3471,
+      "longitude": 14.5506
+    },
+    {
+      "city": "Eemshaven",
+      "country": "Netherlands",
+      "regionId": "europe-west4",
+      "hostname": "storage.europe-west4.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 36.2992,
+      "longitude": -89.7512
+    },
+    {
+      "city": "Zurich",
+      "country": "Switzerland",
+      "regionId": "europe-west6",
+      "hostname": "storage.europe-west6.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 47.3667,
+      "longitude": 8.55
+    },
+    {
+      "city": "Milan",
+      "country": "Italy",
+      "regionId": "europe-west8",
+      "hostname": "storage.europe-west8.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 45.4643,
+      "longitude": 9.1895
+    },
+    {
+      "city": "Paris",
+      "country": "France",
+      "regionId": "europe-west9",
+      "hostname": "storage.europe-west9.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 48.8534,
+      "longitude": 2.3488
+    },
+    {
+      "city": "Berlin",
+      "country": "Germany",
+      "regionId": "europe-west10",
+      "hostname": "storage.europe-west10.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 52.5244,
+      "longitude": 13.4105
+    },
+    {
+      "city": "Turin",
+      "country": "Italy",
+      "regionId": "europe-west12",
+      "hostname": "storage.europe-west12.rep.googleapis.com",
+      "continent": "Europe",
+      "latitude": 45.0705,
+      "longitude": 7.6868
+    },
+    {
+      "city": "Doha",
+      "country": "Qatar",
+      "regionId": "me-central1",
+      "hostname": "storage.me-central1.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 25.2855,
+      "longitude": 51.531
+    },
+    {
+      "city": "Dammam",
+      "country": "Saudi Arabia",
+      "regionId": "me-central2",
+      "hostname": "storage.me-central2.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 26.4344,
+      "longitude": 50.1033
+    },
+    {
+      "city": "Tel Aviv",
+      "country": "Israel",
+      "regionId": "me-west1",
+      "hostname": "storage.me-west1.rep.googleapis.com",
+      "continent": "Asia",
+      "latitude": 32.0809,
+      "longitude": 34.7806
+    },
+    {
+      "city": "Queretaro",
+      "country": "Mexico",
+      "regionId": "northamerica-south1",
+      "hostname": "storage.northamerica-south1.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 15.8375,
+      "longitude": -92.7577
+    },
+    {
+      "city": "Montréal",
+      "country": "Canada",
+      "regionId": "northamerica-northeast1",
+      "hostname": "storage.northamerica-northeast1.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 45.5088,
+      "longitude": -73.5878
+    },
+    {
+      "city": "Toronto",
+      "country": "Canada",
+      "regionId": "northamerica-northeast2",
+      "hostname": "storage.northamerica-northeast2.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 43.7064,
+      "longitude": -79.3986
+    },
+    {
+      "city": "São Paulo",
+      "country": "Brazil",
+      "regionId": "southamerica-east1",
+      "hostname": "storage.southamerica-east1.rep.googleapis.com",
+      "continent": "South America",
+      "latitude": -23.5475,
+      "longitude": -46.6361
+    },
+    {
+      "city": "Santiago",
+      "country": "Chile",
+      "regionId": "southamerica-west1",
+      "hostname": "storage.southamerica-west1.rep.googleapis.com",
+      "continent": "South America",
+      "latitude": 19.4508,
+      "longitude": -70.6947
+    },
+    {
+      "city": "Council Bluffs",
+      "country": "United States",
+      "regionId": "us-central1",
+      "hostname": "storage.us-central1.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 41.2619,
+      "longitude": -95.8608
+    },
+    {
+      "city": "Moncks Corner",
+      "country": "United States",
+      "regionId": "us-east1",
+      "hostname": "storage.us-east1.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 33.1963,
+      "longitude": -80.0143
+    },
+    {
+      "city": "Ashburn",
+      "country": "United States",
+      "regionId": "us-east4",
+      "hostname": "storage.us-east4.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 31.706,
+      "longitude": -83.6532
+    },
+    {
+      "city": "Columbus",
+      "country": "United States",
+      "regionId": "us-east5",
+      "hostname": "storage.us-east5.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 39.9612,
+      "longitude": -82.9988
+    },
+    {
+      "city": "Dallas",
+      "country": "United States",
+      "regionId": "us-south1",
+      "hostname": "storage.us-south1.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 32.7831,
+      "longitude": -96.8067
+    },
+    {
+      "city": "The Dalles",
+      "country": "United States",
+      "regionId": "us-west1",
+      "hostname": "storage.us-west1.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 45.5946,
+      "longitude": -121.1787
+    },
+    {
+      "city": "Los Angeles",
+      "country": "United States",
+      "regionId": "us-west2",
+      "hostname": "storage.us-west2.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 34.0522,
+      "longitude": -118.2437
+    },
+    {
+      "city": "Salt Lake City",
+      "country": "United States",
+      "regionId": "us-west3",
+      "hostname": "storage.us-west3.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 40.7608,
+      "longitude": -111.8911
+    },
+    {
+      "city": "Las Vegas",
+      "country": "United States",
+      "regionId": "us-west4",
+      "hostname": "storage.us-west4.rep.googleapis.com",
+      "continent": "North America",
+      "latitude": 36.175,
+      "longitude": -115.1372
+    }
+  ]
+}

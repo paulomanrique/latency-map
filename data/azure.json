@@ -1,0 +1,303 @@
+{
+  "name": "Microsoft Azure",
+  "website": "https://azure.microsoft.com",
+  "hosts": [
+    {
+      "city": "Johannesburg",
+      "country": "South Africa",
+      "regionId": "southafricanorth",
+      "hostname": "southafricanorth.tts.speech.microsoft.com",
+      "continent": "Africa",
+      "latitude": -26.2023,
+      "longitude": 28.0436
+    },
+    {
+      "city": "Hong Kong",
+      "country": "Hong Kong",
+      "regionId": "eastasia",
+      "hostname": "eastasia.tts.speech.microsoft.com",
+      "continent": "Asia",
+      "latitude": 22.2783,
+      "longitude": 114.1747
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "regionId": "southeastasia",
+      "hostname": "southeastasia.tts.speech.microsoft.com",
+      "continent": "Asia",
+      "latitude": 1.2897,
+      "longitude": 103.8501
+    },
+    {
+      "city": "Sydney",
+      "country": "Australia",
+      "regionId": "australiaeast",
+      "hostname": "australiaeast.tts.speech.microsoft.com",
+      "continent": "Oceania",
+      "latitude": -33.8678,
+      "longitude": 151.2073
+    },
+    {
+      "city": "Pune",
+      "country": "India",
+      "regionId": "centralindia",
+      "hostname": "centralindia.tts.speech.microsoft.com",
+      "continent": "Asia",
+      "latitude": 18.5196,
+      "longitude": 73.8554
+    },
+    {
+      "city": "Tokyo",
+      "country": "Japan",
+      "regionId": "japaneast",
+      "hostname": "japaneast.tts.speech.microsoft.com",
+      "continent": "Asia",
+      "latitude": 35.6895,
+      "longitude": 139.6917
+    },
+    {
+      "city": "Osaka",
+      "country": "Japan",
+      "regionId": "japanwest",
+      "hostname": "japanwest.tts.speech.microsoft.com",
+      "continent": "Asia",
+      "latitude": 34.6938,
+      "longitude": 135.5011
+    },
+    {
+      "city": "Seoul",
+      "country": "South Korea",
+      "regionId": "koreacentral",
+      "hostname": "koreacentral.tts.speech.microsoft.com",
+      "continent": "Asia",
+      "latitude": 37.566,
+      "longitude": 126.9784
+    },
+    {
+      "city": "Toronto",
+      "country": "Canada",
+      "regionId": "canadacentral",
+      "hostname": "canadacentral.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 43.7064,
+      "longitude": -79.3986
+    },
+    {
+      "city": "Quebec City",
+      "country": "Canada",
+      "regionId": "canadaeast",
+      "hostname": "canadaeast.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 60.1087,
+      "longitude": -113.6426
+    },
+    {
+      "city": "Dublin",
+      "country": "Ireland",
+      "regionId": "northeurope",
+      "hostname": "northeurope.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 53.3331,
+      "longitude": -6.2489
+    },
+    {
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "regionId": "westeurope",
+      "hostname": "westeurope.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 52.374,
+      "longitude": 4.8897
+    },
+    {
+      "city": "Paris",
+      "country": "France",
+      "regionId": "francecentral",
+      "hostname": "francecentral.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 48.8534,
+      "longitude": 2.3488
+    },
+    {
+      "city": "Frankfurt",
+      "country": "Germany",
+      "regionId": "germanywestcentral",
+      "hostname": "germanywestcentral.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 52.3471,
+      "longitude": 14.5506
+    },
+    {
+      "city": "Milan",
+      "country": "Italy",
+      "regionId": "italynorth",
+      "hostname": "italynorth.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 45.4643,
+      "longitude": 9.1895
+    },
+    {
+      "city": "Oslo",
+      "country": "Norway",
+      "regionId": "norwayeast",
+      "hostname": "norwayeast.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 59.9127,
+      "longitude": 10.7461
+    },
+    {
+      "city": "Stockholm",
+      "country": "Sweden",
+      "regionId": "swedencentral",
+      "hostname": "swedencentral.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 59.3294,
+      "longitude": 18.0687
+    },
+    {
+      "city": "Zurich",
+      "country": "Switzerland",
+      "regionId": "switzerlandnorth",
+      "hostname": "switzerlandnorth.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 47.3667,
+      "longitude": 8.55
+    },
+    {
+      "city": "Geneva",
+      "country": "Switzerland",
+      "regionId": "switzerlandwest",
+      "hostname": "switzerlandwest.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 46.2022,
+      "longitude": 6.1457
+    },
+    {
+      "city": "London",
+      "country": "United Kingdom",
+      "regionId": "uksouth",
+      "hostname": "uksouth.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 51.5085,
+      "longitude": -0.1257
+    },
+    {
+      "city": "Cardiff",
+      "country": "United Kingdom",
+      "regionId": "ukwest",
+      "hostname": "ukwest.tts.speech.microsoft.com",
+      "continent": "Europe",
+      "latitude": 51.48,
+      "longitude": -3.18
+    },
+    {
+      "city": "Dubai",
+      "country": "United Arab Emirates",
+      "regionId": "uaenorth",
+      "hostname": "uaenorth.tts.speech.microsoft.com",
+      "continent": "Asia",
+      "latitude": 25.0772,
+      "longitude": 55.3093
+    },
+    {
+      "city": "São Paulo",
+      "country": "Brazil",
+      "regionId": "brazilsouth",
+      "hostname": "brazilsouth.tts.speech.microsoft.com",
+      "continent": "South America",
+      "latitude": -23.5475,
+      "longitude": -46.6361
+    },
+    {
+      "city": "Doha",
+      "country": "Qatar",
+      "regionId": "qatarcentral",
+      "hostname": "qatarcentral.tts.speech.microsoft.com",
+      "continent": "Asia",
+      "latitude": 25.2855,
+      "longitude": 51.531
+    },
+    {
+      "city": "Des Moines",
+      "country": "United States",
+      "regionId": "centralus",
+      "hostname": "centralus.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 41.6005,
+      "longitude": -93.6091
+    },
+    {
+      "city": "Ashburn",
+      "country": "United States",
+      "regionId": "eastus",
+      "hostname": "eastus.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 31.706,
+      "longitude": -83.6532
+    },
+    {
+      "city": "Boydton",
+      "country": "United States",
+      "regionId": "eastus2",
+      "hostname": "eastus2.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 36.6676,
+      "longitude": -78.3875
+    },
+    {
+      "city": "Chicago",
+      "country": "United States",
+      "regionId": "northcentralus",
+      "hostname": "northcentralus.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 41.85,
+      "longitude": -87.65
+    },
+    {
+      "city": "San Antonio",
+      "country": "United States",
+      "regionId": "southcentralus",
+      "hostname": "southcentralus.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 29.4241,
+      "longitude": -98.4936
+    },
+    {
+      "city": "Cheyenne",
+      "country": "United States",
+      "regionId": "westcentralus",
+      "hostname": "westcentralus.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 41.14,
+      "longitude": -104.8203
+    },
+    {
+      "city": "San Francisco",
+      "country": "United States",
+      "regionId": "westus",
+      "hostname": "westus.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 37.7749,
+      "longitude": -122.4194
+    },
+    {
+      "city": "Seattle",
+      "country": "United States",
+      "regionId": "westus2",
+      "hostname": "westus2.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 47.6062,
+      "longitude": -122.3321
+    },
+    {
+      "city": "Phoenix",
+      "country": "United States",
+      "regionId": "westus3",
+      "hostname": "westus3.tts.speech.microsoft.com",
+      "continent": "North America",
+      "latitude": 33.4484,
+      "longitude": -112.074
+    }
+  ]
+}

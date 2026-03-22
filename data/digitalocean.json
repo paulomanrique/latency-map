@@ -1,0 +1,132 @@
+{
+  "name": "DigitalOcean",
+  "website": "https://www.digitalocean.com",
+  "hosts": [
+    {
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "regionId": "ams3",
+      "hostname": "ams3.digitaloceanspaces.com",
+      "continent": "Europe",
+      "latitude": 52.374,
+      "longitude": 4.8897
+    },
+    {
+      "city": "Atlanta",
+      "country": "United States",
+      "regionId": "atl1",
+      "hostname": "atl1.digitaloceanspaces.com",
+      "continent": "North America",
+      "latitude": 33.749,
+      "longitude": -84.388
+    },
+    {
+      "city": "Bangalore",
+      "country": "India",
+      "regionId": "blr1",
+      "hostname": "blr1.digitaloceanspaces.com",
+      "continent": "Asia",
+      "latitude": 12.9719,
+      "longitude": 77.5937
+    },
+    {
+      "city": "Frankfurt",
+      "country": "Germany",
+      "regionId": "fra1",
+      "hostname": "fra1.digitaloceanspaces.com",
+      "continent": "Europe",
+      "latitude": 52.3471,
+      "longitude": 14.5506
+    },
+    {
+      "city": "London",
+      "country": "United Kingdom",
+      "regionId": "lon1",
+      "hostname": "lon1.digitaloceanspaces.com",
+      "continent": "Europe",
+      "latitude": 51.5085,
+      "longitude": -0.1257
+    },
+    {
+      "city": "New York City",
+      "country": "United States",
+      "regionId": "nyc1",
+      "hostname": "nyc1.digitaloceanspaces.com",
+      "continent": "North America",
+      "latitude": 40.7143,
+      "longitude": -74.006
+    },
+    {
+      "city": "New York City",
+      "country": "United States",
+      "regionId": "nyc2",
+      "hostname": "nyc2.digitaloceanspaces.com",
+      "continent": "North America",
+      "latitude": 40.7143,
+      "longitude": -74.006
+    },
+    {
+      "city": "New York City",
+      "country": "United States",
+      "regionId": "nyc3",
+      "hostname": "nyc3.digitaloceanspaces.com",
+      "continent": "North America",
+      "latitude": 40.7143,
+      "longitude": -74.006
+    },
+    {
+      "city": "Richmond",
+      "country": "United States",
+      "regionId": "ric1",
+      "hostname": "ric1.digitaloceanspaces.com",
+      "continent": "North America",
+      "latitude": 37.5538,
+      "longitude": -77.4603
+    },
+    {
+      "city": "San Francisco",
+      "country": "United States",
+      "regionId": "sfo2",
+      "hostname": "sfo2.digitaloceanspaces.com",
+      "continent": "North America",
+      "latitude": 37.7749,
+      "longitude": -122.4194
+    },
+    {
+      "city": "San Francisco",
+      "country": "United States",
+      "regionId": "sfo3",
+      "hostname": "sfo3.digitaloceanspaces.com",
+      "continent": "North America",
+      "latitude": 37.7749,
+      "longitude": -122.4194
+    },
+    {
+      "city": "Singapore",
+      "country": "Singapore",
+      "regionId": "sgp1",
+      "hostname": "sgp1.digitaloceanspaces.com",
+      "continent": "Asia",
+      "latitude": 1.2897,
+      "longitude": 103.8501
+    },
+    {
+      "city": "Sydney",
+      "country": "Australia",
+      "regionId": "syd1",
+      "hostname": "syd1.digitaloceanspaces.com",
+      "continent": "Oceania",
+      "latitude": -33.8678,
+      "longitude": 151.2073
+    },
+    {
+      "city": "Toronto",
+      "country": "Canada",
+      "regionId": "tor1",
+      "hostname": "tor1.digitaloceanspaces.com",
+      "continent": "North America",
+      "latitude": 43.7064,
+      "longitude": -79.3986
+    }
+  ]
+}
