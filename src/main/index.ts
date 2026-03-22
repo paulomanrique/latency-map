@@ -17,6 +17,7 @@ import { clearLogs, getLogs, writeLog } from './logger';
 
 let mainWindow: BrowserWindow | null = null;
 let activeCatalog: ProviderCatalog = catalog;
+let activeMeasurementController: AbortController | null = null;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -77,18 +78,38 @@ app.whenReady().then(() => {
   ipcMain.handle(
     'measurements:run',
     async (_event, request: RunMeasurementsRequest) => {
+      if (activeMeasurementController) {
+        throw new Error('A measurement run is already in progress.');
+      }
+      activeMeasurementController = new AbortController();
       writeLog('main', 'info', `Received run request for ${request.targets.length} target(s).`);
-      const batch = await runNativeMeasurements(request, (progress: MeasurementProgressEvent) => {
-        mainWindow?.webContents.send('measurements:progress', progress);
-      });
-      writeLog(
-        'main',
-        'info',
-        `Measurement batch finished with ${batch.results.length} result(s).`
-      );
-      return batch;
+      try {
+        const batch = await runNativeMeasurements(
+          request,
+          activeMeasurementController.signal,
+          (progress: MeasurementProgressEvent) => {
+            mainWindow?.webContents.send('measurements:progress', progress);
+          }
+        );
+        writeLog(
+          'main',
+          'info',
+          `Measurement batch finished with ${batch.results.length} result(s).`
+        );
+        return batch;
+      } finally {
+        activeMeasurementController = null;
+      }
     }
   );
+  ipcMain.handle('measurements:cancel', async () => {
+    if (!activeMeasurementController || activeMeasurementController.signal.aborted) {
+      return false;
+    }
+    writeLog('main', 'warn', 'Cancellation requested for active measurement batch.');
+    activeMeasurementController.abort();
+    return true;
+  });
   ipcMain.handle('version:get', async () => ({
     version: app.getVersion(),
     platform: process.platform,
