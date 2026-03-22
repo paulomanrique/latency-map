@@ -46,6 +46,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Derive version from tag
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$VERSION" == "$GITHUB_REF_NAME" ]]; then
+            echo "Expected a tag in the form vX.Y.Z, got: $GITHUB_REF_NAME"
+            exit 1
+          fi
+          npm version "$VERSION" --no-git-tag-version
+
       - name: Build package
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
