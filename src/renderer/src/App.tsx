@@ -176,6 +176,10 @@ function summarizeHosts(hosts: DisplayHost[]) {
 }
 
 function App() {
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('latencymap-theme');
+    return saved === 'light' ? 'light' : 'dark';
+  });
   const [catalog, setCatalog] = useState<ProviderCatalog | null>(null);
   const [settings, setSettings] = useState<AppSettings>({ rounds: 5, concurrency: 5 });
   const [customHosts, setCustomHosts] = useState<CustomHost[]>([]);
@@ -237,6 +241,11 @@ function App() {
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [settingsOpen, editorOpen, deleteTarget]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('latencymap-theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     const load = async () => {
@@ -738,6 +747,13 @@ function App() {
               </div>
             </div>
             <div className="topbar-right">
+              <button
+                className="gear-btn"
+                onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+                title="Toggle theme"
+              >
+                {theme === 'dark' ? '☀' : '🌙'}
+              </button>
               <button className="gear-btn" onClick={() => setSettingsOpen(true)} title="Settings">
                 ⚙
               </button>
