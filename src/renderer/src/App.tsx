@@ -713,39 +713,41 @@ function App() {
             </div>
             <div className="sidebar-logo-text">LatencyMap</div>
           </div>
-          <div
-            className={`nav-item ${viewMode === 'query' && !activeProviderId ? 'active' : ''}`}
-            onClick={() => {
-              setViewMode('query');
-              setActiveProviderId(null);
-            }}
-          >
-            <span className="nav-icon">◈</span>Query
-          </div>
-          <div
-            className={`nav-item ${viewMode === 'custom' ? 'active' : ''}`}
-            onClick={() => {
-              setViewMode('custom');
-              setActiveProviderId(null);
-            }}
-          >
-            <span className="nav-icon">✦</span>Custom Hosts
-          </div>
-          <div className="sidebar-divider"></div>
-          <div className="sidebar-section-label">Providers</div>
-          {sortedProviders.map((provider) => (
+          <div className="sidebar-scroll">
             <div
-              key={provider.id}
-              className={`nav-item ${activeProviderId === provider.id ? 'active' : ''}`}
+              className={`nav-item ${viewMode === 'query' && !activeProviderId ? 'active' : ''}`}
               onClick={() => {
                 setViewMode('query');
-                setActiveProviderId(provider.id);
+                setActiveProviderId(null);
               }}
             >
-              <span className="nav-icon">{provider.icon}</span>
-              {provider.name}
+              <span className="nav-icon">◈</span>Query
             </div>
-          ))}
+            <div
+              className={`nav-item ${viewMode === 'custom' ? 'active' : ''}`}
+              onClick={() => {
+                setViewMode('custom');
+                setActiveProviderId(null);
+              }}
+            >
+              <span className="nav-icon">✦</span>Custom Hosts
+            </div>
+            <div className="sidebar-divider"></div>
+            <div className="sidebar-section-label">Providers</div>
+            {sortedProviders.map((provider) => (
+              <div
+                key={provider.id}
+                className={`nav-item ${activeProviderId === provider.id ? 'active' : ''}`}
+                onClick={() => {
+                  setViewMode('query');
+                  setActiveProviderId(provider.id);
+                }}
+              >
+                <span className="nav-icon">{provider.icon}</span>
+                {provider.name}
+              </div>
+            ))}
+          </div>
           <div className="sidebar-legend">
             <div className="legend-title">Latency Legend</div>
             <div className="legend-row">
