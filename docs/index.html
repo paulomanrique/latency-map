@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LatencyMap</title>
+  <meta name="description" content="Desktop app for measuring network latency and traceroute to cloud provider endpoints worldwide.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <script src="main.js" defer></script>
+</head>
+<body>
+
+  <header class="header" id="header">
+    <a href="#" class="logo">
+      <span class="logo-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="12" width="4" height="10" rx="1" fill="currentColor"/>
+          <rect x="10" y="7" width="4" height="15" rx="1" fill="currentColor"/>
+          <rect x="18" y="2" width="4" height="20" rx="1" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="logo-text">LatencyMap</span>
+    </a>
+    <nav>
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="https://github.com/paulomanrique/latency-map" target="_blank">GitHub</a>
+
+      <!-- Language selector -->
+      <div class="lang-selector" id="lang-selector">
+        <button class="lang-btn" id="lang-btn" aria-haspopup="listbox" aria-expanded="false">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span id="lang-label">EN</span>
+          <svg class="lang-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="lang-menu" id="lang-menu" role="listbox">
+          <button class="lang-opt" data-lang="en">English</button>
+          <button class="lang-opt" data-lang="pt">Português</button>
+          <button class="lang-opt" data-lang="es">Español</button>
+          <button class="lang-opt" data-lang="de">Deutsch</button>
+          <button class="lang-opt" data-lang="fr">Français</button>
+          <button class="lang-opt" data-lang="nl">Nederlands</button>
+          <button class="lang-opt" data-lang="ru">Русский</button>
+          <button class="lang-opt" data-lang="sr">Srpski</button>
+          <button class="lang-opt" data-lang="ar">العربية</button>
+          <button class="lang-opt" data-lang="zh">中文</button>
+          <button class="lang-opt" data-lang="ja">日本語</button>
+          <button class="lang-opt" data-lang="ko">한국어</button>
+        </div>
+      </div>
+
+      <a href="https://github.com/paulomanrique/latency-map/releases/latest" class="nav-cta" data-i18n="nav.download">Download</a>
+      <button id="theme-toggle" aria-label="Toggle theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-text animate-in" style="--i:0">
+        <h1 data-i18n-html="hero.h1">See where your<br>network <span class="word-accent">stands.</span></h1>
+        <p data-i18n="hero.p">Ping and traceroute to hundreds of cloud endpoints — natively, with no external binaries. Filter by location, sort by distance, measure everything.</p>
+        <div class="hero-cta">
+          <a href="https://github.com/paulomanrique/latency-map/releases/latest" class="btn-primary" data-i18n="hero.btn.download">Download free</a>
+          <a href="https://github.com/paulomanrique/latency-map" target="_blank" class="btn-ghost" data-i18n="hero.btn.github">Source on GitHub</a>
+        </div>
+      </div>
+
+      <!-- Latency indicators (data — not translated) -->
+      <div class="latency-row animate-in" style="--i:1" aria-hidden="true">
+        <div class="lat-chip lat-good">
+          <span class="lat-dot"></span>
+          <span class="lat-ms">13ms</span>
+          <span class="lat-label">eu-west-1</span>
+        </div>
+        <div class="lat-chip lat-mid">
+          <span class="lat-dot"></span>
+          <span class="lat-ms">24ms</span>
+          <span class="lat-label">eu-central-1</span>
+        </div>
+        <div class="lat-chip lat-slow">
+          <span class="lat-dot"></span>
+          <span class="lat-ms">61ms</span>
+          <span class="lat-label">us-east-1</span>
+        </div>
+        <div class="lat-chip lat-good">
+          <span class="lat-dot"></span>
+          <span class="lat-ms">19ms</span>
+          <span class="lat-label">eu-south-2</span>
+        </div>
+      </div>
+
+      <!-- Screenshot -->
+      <div class="screenshot-wrap animate-in" style="--i:2">
+        <div class="screenshot-frame">
+          <img src="SCR-20260322-ljzh.png" alt="LatencyMap — light mode" class="app-screenshot theme-light">
+          <img src="SCR-20260322-lkam.png" alt="LatencyMap — dark mode" class="app-screenshot theme-dark">
+        </div>
+        <div class="screen-glow"></div>
+      </div>
+    </section>
+
+    <!-- Feature rows -->
+    <section class="features" id="features">
+      <div class="features-label scroll-animate" data-i18n="features.label">What it does</div>
+
+      <div class="feature-row scroll-animate">
+        <div class="feature-row-num">01</div>
+        <div class="feature-row-name" data-i18n="f1.name">Native Ping &amp; Traceroute</div>
+        <div class="feature-row-desc" data-i18n="f1.desc">Executes OS-level ping and traceroute. No wrappers, no external binaries — raw system calls for accurate per-hop RTT and IP breakdowns.</div>
+      </div>
+
+      <div class="feature-row scroll-animate">
+        <div class="feature-row-num">02</div>
+        <div class="feature-row-name" data-i18n="f2.name">Auto-Updating Catalog</div>
+        <div class="feature-row-desc" data-i18n="f2.desc">Provider endpoints refresh from the repository every launch. Always current without reinstalling.</div>
+      </div>
+
+      <div class="feature-row scroll-animate">
+        <div class="feature-row-num">03</div>
+        <div class="feature-row-name" data-i18n="f3.name">Geo-Location Filtering</div>
+        <div class="feature-row-desc" data-i18n="f3.desc">Filter by continent, country, or city. Sort hosts by geographic distance from your coordinates.</div>
+      </div>
+
+      <div class="feature-row scroll-animate">
+        <div class="feature-row-num">04</div>
+        <div class="feature-row-name" data-i18n="f4.name">Custom Hosts</div>
+        <div class="feature-row-desc" data-i18n="f4.desc">Add your own servers alongside cloud endpoints. Monitor everything from one place.</div>
+      </div>
+
+      <div class="feature-row scroll-animate">
+        <div class="feature-row-num">05</div>
+        <div class="feature-row-name" data-i18n="f5.name">Quality Scoring</div>
+        <div class="feature-row-desc" data-i18n="f5.desc">Ping, packet loss, and jitter combine into a multi-tiered score. Spot bad connections instantly.</div>
+      </div>
+
+      <div class="feature-row scroll-animate">
+        <div class="feature-row-num">06</div>
+        <div class="feature-row-name" data-i18n="f6.name">Data Visualization</div>
+        <div class="feature-row-desc" data-i18n="f6.desc">Measurements rendered in an optimized monospace table layout. Dense, readable, precise.</div>
+      </div>
+    </section>
+
+    <!-- Bottom CTA -->
+    <section class="bottom-cta scroll-animate">
+      <h2 data-i18n-html="cta.h2">Free. Open source.<br>Runs everywhere.</h2>
+      <a href="https://github.com/paulomanrique/latency-map/releases/latest" class="btn-primary btn-large" data-i18n="cta.btn">Download Latest Release</a>
+      <p class="bottom-cta-sub" data-i18n="cta.sub">Windows · macOS · Linux · Unlicense</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="logo footer-logo">
+      <span class="logo-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="12" width="4" height="10" rx="1" fill="currentColor"/>
+          <rect x="10" y="7" width="4" height="15" rx="1" fill="currentColor"/>
+          <rect x="18" y="2" width="4" height="20" rx="1" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="logo-text">LatencyMap</span>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/paulomanrique/latency-map/releases" data-i18n="footer.releases">Releases</a>
+      <a href="https://github.com/paulomanrique/latency-map/issues" data-i18n="footer.issues">Issues</a>
+      <a href="https://github.com/paulomanrique/latency-map/pulls" data-i18n="footer.contribute">Contribute</a>
+      <a href="https://github.com/paulomanrique/latency-map/blob/main/UNLICENSE" data-i18n="footer.unlicense">Unlicense</a>
+    </div>
+  </footer>
+
+</body>
+</html>
