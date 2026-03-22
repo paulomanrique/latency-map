@@ -14,6 +14,7 @@ const api: LatencyMapApi = {
   upsertCustomHost: (input) => ipcRenderer.invoke('custom-hosts:upsert', input),
   deleteCustomHost: (id) => ipcRenderer.invoke('custom-hosts:delete', id),
   runMeasurements: (request) => ipcRenderer.invoke('measurements:run', request),
+  cancelMeasurements: () => ipcRenderer.invoke('measurements:cancel'),
   getAppVersion: () => ipcRenderer.invoke('version:get'),
   checkForUpdates: () => ipcRenderer.invoke('updates:check'),
   openReleasesPage: () => ipcRenderer.invoke('updates:open-releases'),

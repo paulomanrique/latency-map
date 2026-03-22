@@ -176,6 +176,10 @@ function summarizeHosts(hosts: DisplayHost[]) {
 }
 
 function App() {
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('latencymap-theme');
+    return saved === 'light' ? 'light' : 'dark';
+  });
   const [catalog, setCatalog] = useState<ProviderCatalog | null>(null);
   const [settings, setSettings] = useState<AppSettings>({ rounds: 5, concurrency: 5 });
   const [customHosts, setCustomHosts] = useState<CustomHost[]>([]);
@@ -186,6 +190,7 @@ function App() {
   const [sort, setSort] = useState<SortState>({ key: 'latency', dir: 'asc' });
   const [expandedHostId, setExpandedHostId] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<CustomHost | null>(null);
@@ -237,6 +242,11 @@ function App() {
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [settingsOpen, editorOpen, deleteTarget]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('latencymap-theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     const load = async () => {
@@ -306,7 +316,12 @@ function App() {
           }
 
           if (event.type === 'batch-finished') {
-            return { ...current, completedAt: event.completedAt ?? current.completedAt };
+            return {
+              ...current,
+              completedAt: event.completedAt ?? current.completedAt,
+              cancelled: event.cancelled,
+              warning: event.warning,
+            };
           }
 
           return current;
@@ -322,6 +337,9 @@ function App() {
         }
         if (event.type === 'batch-finished') {
           setRunningTargetIds([]);
+          if (event.cancelled) {
+            pushRendererLog('warn', event.warning ?? 'Measurement run cancelled.');
+          }
         }
       }
     );
@@ -454,6 +472,7 @@ function App() {
   async function runMeasurements() {
     if (!catalog) return;
     setRunning(true);
+    setCancelling(false);
     setError(null);
     setRunningTargetIds([]);
     try {
@@ -508,13 +527,45 @@ function App() {
       );
       const result = await window.latencyMap.runMeasurements(request);
       setBatch(result);
-      pushRendererLog('info', `Run completed with ${result.results.length} result(s).`);
+      pushRendererLog(
+        result.cancelled ? 'warn' : 'info',
+        result.cancelled
+          ? `Run cancelled after ${result.results.length} result(s).`
+          : `Run completed with ${result.results.length} result(s).`
+      );
     } catch (runError) {
       setError((runError as Error).message);
       pushRendererLog('error', `Run failed: ${(runError as Error).message}`);
     } finally {
+      setCancelling(false);
       setRunning(false);
     }
+  }
+
+  async function cancelMeasurements() {
+    if (!running || cancelling) {
+      return;
+    }
+
+    setCancelling(true);
+    try {
+      const cancelled = await window.latencyMap.cancelMeasurements();
+      if (!cancelled) {
+        setCancelling(false);
+      }
+    } catch (cancelError) {
+      setCancelling(false);
+      setError((cancelError as Error).message);
+      pushRendererLog('error', `Cancel failed: ${(cancelError as Error).message}`);
+    }
+  }
+
+  function handleRunButtonClick() {
+    if (running) {
+      void cancelMeasurements();
+      return;
+    }
+    void runMeasurements();
   }
 
   async function persistSettings(nextSettings: AppSettings) {
@@ -738,6 +789,13 @@ function App() {
               </div>
             </div>
             <div className="topbar-right">
+              <button
+                className="gear-btn"
+                onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+                title="Toggle theme"
+              >
+                {theme === 'dark' ? '☀' : '🌙'}
+              </button>
               <button className="gear-btn" onClick={() => setSettingsOpen(true)} title="Settings">
                 ⚙
               </button>
@@ -907,8 +965,8 @@ function App() {
 
                   <div className="qp-spacer" />
 
-                  <button className="rescan-btn" disabled={running} onClick={() => void runMeasurements()}>
-                    {running ? '… RUNNING' : '⟳ RUN'}
+                  <button className="rescan-btn" disabled={cancelling} onClick={handleRunButtonClick}>
+                    {running ? (cancelling ? '… STOPPING' : '■ CANCEL') : '⟳ RUN'}
                   </button>
                 </div>
               </div>
@@ -996,8 +1054,8 @@ function App() {
                     <span className="provider-label">{activeProvider.name}</span>
                     <span className="provider-pill">{providerHosts.length} nodes</span>
                     <div className="qp-spacer" />
-                    <button className="rescan-btn" disabled={running} onClick={() => void runMeasurements()}>
-                      {running ? '… RUNNING' : '⟳ RUN'}
+                    <button className="rescan-btn" disabled={cancelling} onClick={handleRunButtonClick}>
+                      {running ? (cancelling ? '… STOPPING' : '■ CANCEL') : '⟳ RUN'}
                     </button>
                   </div>
                   <table className="data-table">
@@ -1073,8 +1131,8 @@ function App() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <button className="rescan-btn" disabled={running} onClick={() => void runMeasurements()}>
-                    {running ? '… RUNNING' : '⟳ RUN'}
+                  <button className="rescan-btn" disabled={cancelling} onClick={handleRunButtonClick}>
+                    {running ? (cancelling ? '… STOPPING' : '■ CANCEL') : '⟳ RUN'}
                   </button>
                   <button
                     className="btn-add"

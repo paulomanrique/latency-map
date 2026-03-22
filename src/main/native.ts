@@ -22,6 +22,7 @@ interface PingSummary {
 
 export async function runNativeMeasurements(
   request: RunMeasurementsRequest,
+  signal?: AbortSignal,
   onProgress?: (event: MeasurementProgressEvent) => void
 ): Promise<MeasurementBatch> {
   const startedAt = new Date().toISOString();
@@ -37,6 +38,10 @@ export async function runNativeMeasurements(
   let cursor = 0;
 
   const runNext = async (): Promise<void> => {
+    if (signal?.aborted) {
+      return;
+    }
+
     const index = cursor++;
     if (index >= request.targets.length) {
       return;
@@ -51,7 +56,7 @@ export async function runNativeMeasurements(
     );
 
     try {
-      const result = await measureTarget(target, request.settings.rounds);
+      const result = await measureTarget(target, request.settings.rounds, signal);
       results.push(result);
       onProgress?.({ type: 'target-finished', targetId: target.id, result });
       writeLog(
@@ -60,6 +65,10 @@ export async function runNativeMeasurements(
         `Finished target ${target.targetName} (${target.host}) with avg ${formatLatency(result.avgLatencyMs)}.`
       );
     } catch (error) {
+      if (isAbortError(error)) {
+        writeLog('main', 'warn', `Cancelled target ${target.targetName} (${target.host}).`);
+        return;
+      }
       const message = (error as Error).message;
       writeLog('main', 'error', `Target failed ${target.targetName} (${target.host}): ${message}`);
       const result: MeasurementResult = {
@@ -110,20 +119,28 @@ export async function runNativeMeasurements(
     completedAt: new Date().toISOString(),
     settings: request.settings,
     degradedPermissions: false,
+    cancelled: signal?.aborted ?? false,
+    warning: signal?.aborted ? 'Measurement run cancelled.' : undefined,
     results,
   };
-  onProgress?.({ type: 'batch-finished', completedAt: batch.completedAt });
+  onProgress?.({
+    type: 'batch-finished',
+    completedAt: batch.completedAt,
+    cancelled: batch.cancelled,
+    warning: batch.warning,
+  });
   return batch;
 }
 
 async function measureTarget(
   target: RunMeasurementsRequest['targets'][number],
-  rounds: number
+  rounds: number,
+  signal?: AbortSignal
 ): Promise<MeasurementResult> {
   writeLog('main', 'info', `Running ping for ${target.host}`);
-  const ping = await runPing(target.host, rounds);
+  const ping = await runPing(target.host, rounds, signal);
   writeLog('main', 'info', `Running traceroute for ${target.host}`);
-  const hops = await runTraceroute(target.host);
+  const hops = await runTraceroute(target.host, signal);
 
   const status = classifyStatus(ping.avgLatencyMs);
   const qualityScore = qualityScoreFor(ping.avgLatencyMs, ping.packetLossPercent, ping.jitterMs);
@@ -148,11 +165,12 @@ async function measureTarget(
   };
 }
 
-async function runPing(host: string, rounds: number): Promise<PingSummary> {
+async function runPing(host: string, rounds: number, signal?: AbortSignal): Promise<PingSummary> {
   if (process.platform === 'win32') {
     const { stdout, stderr } = await execFileAsync('ping', ['-n', String(rounds), host], {
       timeout: 15_000,
       windowsHide: true,
+      signal,
     });
     if (stderr.trim()) {
       writeLog('main', 'warn', `ping stderr for ${host}: ${stderr.trim()}`);
@@ -165,6 +183,7 @@ async function runPing(host: string, rounds: number): Promise<PingSummary> {
     ['-c', String(rounds), '-W', '1000', '-n', host],
     {
       timeout: 15_000,
+      signal,
     }
   );
   if (stderr.trim()) {
@@ -173,11 +192,12 @@ async function runPing(host: string, rounds: number): Promise<PingSummary> {
   return parseUnixPing(stdout);
 }
 
-async function runTraceroute(host: string): Promise<MeasurementHop[]> {
+async function runTraceroute(host: string, signal?: AbortSignal): Promise<MeasurementHop[]> {
   if (process.platform === 'win32') {
     const { stdout, stderr } = await execFileAsync('tracert', ['-d', '-h', '30', host], {
       timeout: 35_000,
       windowsHide: true,
+      signal,
     });
     if (stderr.trim()) {
       writeLog('main', 'warn', `tracert stderr for ${host}: ${stderr.trim()}`);
@@ -191,6 +211,7 @@ async function runTraceroute(host: string): Promise<MeasurementHop[]> {
     ['-n', '-q', '1', '-w', '1', '-m', '30', host],
     {
       timeout: 35_000,
+      signal,
     }
   );
   if (stderr.trim()) {
@@ -371,4 +392,13 @@ function qualityScoreFor(
 
 function formatLatency(value: number | null): string {
   return value === null ? '—' : `${Math.round(value)}ms`;
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    (error.name === 'AbortError' ||
+      error.message.includes('The operation was aborted') ||
+      error.message.includes('The operation was canceled'))
+  );
 }

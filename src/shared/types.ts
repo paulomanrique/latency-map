@@ -97,6 +97,7 @@ export interface MeasurementBatch {
   completedAt: string;
   settings: AppSettings;
   degradedPermissions: boolean;
+  cancelled?: boolean;
   warning?: string;
   results: MeasurementResult[];
 }
@@ -155,6 +156,8 @@ export interface MeasurementProgressEvent {
   startedAt?: string;
   completedAt?: string;
   targetId?: string;
+  cancelled?: boolean;
+  warning?: string;
   result?: MeasurementResult;
 }
 
@@ -190,6 +193,7 @@ export interface LatencyMapApi {
   ) => Promise<CustomHost>;
   deleteCustomHost: (id: string) => Promise<void>;
   runMeasurements: (request: RunMeasurementsRequest) => Promise<MeasurementBatch>;
+  cancelMeasurements: () => Promise<boolean>;
   getAppVersion: () => Promise<VersionInfo>;
   checkForUpdates: () => Promise<UpdateStatus>;
   openReleasesPage: () => Promise<void>;

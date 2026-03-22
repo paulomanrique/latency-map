@@ -58,12 +58,14 @@
       }
     ],
     "win": {
+      "icon": "assets/icon.ico",
       "target": [
         "nsis"
       ],
       "artifactName": "${productName}-${version}-windows-${arch}.${ext}"
     },
     "mac": {
+      "icon": "assets/icon.icns",
       "target": [
         "dmg",
         "zip"
@@ -71,6 +73,7 @@
       "artifactName": "${productName}-${version}-mac-${arch}.${ext}"
     },
     "linux": {
+      "icon": "assets/icon.png",
       "target": [
         "AppImage",
         "tar.gz"
