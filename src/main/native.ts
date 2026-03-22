@@ -194,8 +194,8 @@ async function runPing(host: string, rounds: number, signal?: AbortSignal): Prom
 
 async function runTraceroute(host: string, signal?: AbortSignal): Promise<MeasurementHop[]> {
   if (process.platform === 'win32') {
-    const { stdout, stderr } = await execFileAsync('tracert', ['-d', '-h', '30', host], {
-      timeout: 35_000,
+    const { stdout, stderr } = await execFileAsync('tracert', ['-d', '-h', '30', '-w', '1000', host], {
+      timeout: 95_000,
       windowsHide: true,
       signal,
     });
