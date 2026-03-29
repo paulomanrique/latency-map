@@ -1,5 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type {
+  DeleteShareRequest,
+  SharePayloadV1,
   LatencyMapApi,
   MeasurementProgressEvent,
   ProviderCatalog,
@@ -15,6 +17,8 @@ const api: LatencyMapApi = {
   deleteCustomHost: (id) => ipcRenderer.invoke('custom-hosts:delete', id),
   runMeasurements: (request) => ipcRenderer.invoke('measurements:run', request),
   cancelMeasurements: () => ipcRenderer.invoke('measurements:cancel'),
+  createShare: (payload: SharePayloadV1) => ipcRenderer.invoke('share:create', payload),
+  deleteShare: (request: DeleteShareRequest) => ipcRenderer.invoke('share:delete', request),
   getAppVersion: () => ipcRenderer.invoke('version:get'),
   checkForUpdates: () => ipcRenderer.invoke('updates:check'),
   openReleasesPage: () => ipcRenderer.invoke('updates:open-releases'),

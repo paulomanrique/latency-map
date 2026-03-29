@@ -3,15 +3,19 @@ import { join } from 'node:path';
 import { catalog } from '../shared/catalog';
 import type {
   AppSettings,
+  CreateShareResponse,
   CustomHost,
+  DeleteShareRequest,
   MeasurementProgressEvent,
   ProviderCatalog,
   RunMeasurementsRequest,
+  SharePayloadV1,
   UpdateStatus,
 } from '../shared/types';
 import { fetchRemoteCatalog, loadCachedCatalog } from './catalog-updater';
 import { runNativeMeasurements } from './native';
 import { appStore } from './store';
+import { createShare, deleteShare } from './share';
 import { updateManager } from './update';
 import { clearLogs, getLogs, writeLog } from './logger';
 
@@ -96,6 +100,7 @@ app.whenReady().then(() => {
           'info',
           `Measurement batch finished with ${batch.results.length} result(s).`
         );
+        await appStore.saveLastBatch(batch);
         return batch;
       } finally {
         activeMeasurementController = null;
@@ -109,6 +114,24 @@ app.whenReady().then(() => {
     writeLog('main', 'warn', 'Cancellation requested for active measurement batch.');
     activeMeasurementController.abort();
     return true;
+  });
+  ipcMain.handle('share:create', async (_event, payload: SharePayloadV1): Promise<CreateShareResponse> => {
+    writeLog('main', 'info', `Creating share for ${payload.hosts.length} host(s).`);
+    const result = await createShare(payload);
+    await appStore.saveShareRecord({
+      publicId: result.publicId,
+      publicUrl: result.publicUrl,
+      deleteToken: result.deleteToken,
+      createdAt: payload.createdAt,
+      containsCustomHosts: payload.containsCustomHosts,
+    });
+    writeLog('main', 'info', `Share created at ${result.publicUrl}`);
+    return result;
+  });
+  ipcMain.handle('share:delete', async (_event, request: DeleteShareRequest) => {
+    await deleteShare(request);
+    await appStore.deleteShareRecord(request.publicId);
+    writeLog('main', 'warn', `Share deleted ${request.publicId}`);
   });
   ipcMain.handle('version:get', async () => ({
     version: app.getVersion(),

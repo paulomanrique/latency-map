@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type {
   AppSettings,
+  CreateShareResponse,
   CustomHost,
   LogEntry,
   MeasurementBatch,
@@ -8,6 +9,7 @@ import type {
   ProviderCatalog,
   QueryBuilderState,
   RunMeasurementsRequest,
+  SharePayloadV1,
   UpdateStatus,
   UserReferenceLocation,
 } from '../../shared/types';
@@ -26,6 +28,7 @@ import {
   type SortKey,
   type SortState,
 } from './lib/models';
+import { buildSharePayload, getActiveProviderName } from './lib/share';
 
 type ViewMode = 'query' | 'custom';
 type LocationMode = 'locations' | 'distance';
@@ -211,6 +214,12 @@ function App() {
     latitude: '',
     longitude: '',
   });
+  const [shareBusy, setShareBusy] = useState(false);
+  const [shareError, setShareError] = useState<string | null>(null);
+  const [shareWarningPayload, setShareWarningPayload] = useState<SharePayloadV1 | null>(null);
+  const [shareSuccess, setShareSuccess] = useState<(CreateShareResponse & {
+    containsCustomHosts: boolean;
+  }) | null>(null);
   const logsBodyRef = useRef<HTMLDivElement | null>(null);
   const settingsRef = useRef(settings);
 
@@ -234,6 +243,8 @@ function App() {
   useEffect(() => {
     function handleEsc(event: KeyboardEvent) {
       if (event.key === 'Escape') {
+        if (shareSuccess) setShareSuccess(null);
+        else if (shareWarningPayload) setShareWarningPayload(null);
         if (deleteTarget) setDeleteTarget(null);
         else if (editorOpen) setEditorOpen(false);
         else if (settingsOpen) setSettingsOpen(false);
@@ -241,7 +252,7 @@ function App() {
     }
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
-  }, [settingsOpen, editorOpen, deleteTarget]);
+  }, [settingsOpen, editorOpen, deleteTarget, shareSuccess, shareWarningPayload]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -468,6 +479,103 @@ function App() {
     () => sortedProviders.find((provider) => provider.id === activeProviderId) ?? null,
     [activeProviderId, sortedProviders]
   );
+
+  function buildCurrentSharePayload(): SharePayloadV1 {
+    if (!batch?.results.length) {
+      throw new Error('Run a measurement before creating a share.');
+    }
+
+    const currentViewMode =
+      viewMode === 'custom' ? 'custom' : activeProviderId ? 'provider' : 'query';
+    const currentHosts =
+      viewMode === 'custom' ? filteredCustomHosts : activeProviderId ? providerHosts : rankedHosts;
+
+    if (currentHosts.length === 0) {
+      throw new Error('No hosts are visible in the current view.');
+    }
+
+    const payload = buildSharePayload({
+      appVersion: version,
+      query,
+      settings,
+      batch,
+      view: {
+        mode: currentViewMode,
+        activeProviderId,
+        activeProviderName: getActiveProviderName(catalog, activeProviderId),
+        locationMode,
+        search,
+        sort,
+      },
+      referenceLocation,
+      hosts: currentHosts,
+    });
+
+    if (payload.batch.results.length === 0) {
+      throw new Error('The current view has no measurement results to share.');
+    }
+
+    return payload;
+  }
+
+  async function uploadShare(payload: SharePayloadV1) {
+    setShareBusy(true);
+    setShareError(null);
+    try {
+      const result = await window.latencyMap.createShare(payload);
+      setShareWarningPayload(null);
+      setShareSuccess({
+        ...result,
+        containsCustomHosts: payload.containsCustomHosts,
+      });
+      pushRendererLog('info', `Share created: ${result.publicUrl}`);
+    } catch (shareRequestError) {
+      const message = (shareRequestError as Error).message;
+      setShareError(message);
+      pushRendererLog('error', `Share failed: ${message}`);
+    } finally {
+      setShareBusy(false);
+    }
+  }
+
+  function handleShareClick() {
+    try {
+      const payload = buildCurrentSharePayload();
+      setShareSuccess(null);
+      if (payload.containsCustomHosts) {
+        setShareWarningPayload(payload);
+        return;
+      }
+      void uploadShare(payload);
+    } catch (shareBuildError) {
+      const message = (shareBuildError as Error).message;
+      setShareError(message);
+      pushRendererLog('warn', message);
+    }
+  }
+
+  async function handleDeleteShare() {
+    if (!shareSuccess) {
+      return;
+    }
+
+    setShareBusy(true);
+    setShareError(null);
+    try {
+      await window.latencyMap.deleteShare({
+        publicId: shareSuccess.publicId,
+        deleteToken: shareSuccess.deleteToken,
+      });
+      pushRendererLog('warn', `Share deleted: ${shareSuccess.publicId}`);
+      setShareSuccess(null);
+    } catch (deleteError) {
+      const message = (deleteError as Error).message;
+      setShareError(message);
+      pushRendererLog('error', `Share delete failed: ${message}`);
+    } finally {
+      setShareBusy(false);
+    }
+  }
 
   async function runMeasurements() {
     if (!catalog) return;
@@ -697,6 +805,7 @@ function App() {
       : activeProviderId
         ? providerHosts.length
         : filteredCatalogHosts.length + (query.includeCustomHosts ? customDisplayHosts.length : 0);
+  const shareDisabled = shareBusy || running || !batch?.results.length || visibleHosts.length === 0;
 
   return (
     <>
@@ -969,6 +1078,9 @@ function App() {
 
                   <div className="qp-spacer" />
 
+                  <button className="share-btn" disabled={shareDisabled} onClick={handleShareClick}>
+                    {shareBusy ? '… SHARING' : '⇱ SHARE'}
+                  </button>
                   <button className="rescan-btn" disabled={cancelling} onClick={handleRunButtonClick}>
                     {running ? (cancelling ? '… STOPPING' : '■ CANCEL') : '⟳ RUN'}
                   </button>
@@ -1017,7 +1129,7 @@ function App() {
                     </tbody>
                   </table>
                 </div>
-                {error ? <div className="error-banner">{error}</div> : null}
+                {error || shareError ? <div className="error-banner">{error ?? shareError}</div> : null}
               </div>
 
               <footer className="statusbar">
@@ -1058,6 +1170,9 @@ function App() {
                     <span className="provider-label">{activeProvider.name}</span>
                     <span className="provider-pill">{providerHosts.length} nodes</span>
                     <div className="qp-spacer" />
+                    <button className="share-btn" disabled={shareDisabled} onClick={handleShareClick}>
+                      {shareBusy ? '… SHARING' : '⇱ SHARE'}
+                    </button>
                     <button className="rescan-btn" disabled={cancelling} onClick={handleRunButtonClick}>
                       {running ? (cancelling ? '… STOPPING' : '■ CANCEL') : '⟳ RUN'}
                     </button>
@@ -1093,7 +1208,7 @@ function App() {
                     </tbody>
                   </table>
                 </div>
-                {error ? <div className="error-banner">{error}</div> : null}
+                {error || shareError ? <div className="error-banner">{error ?? shareError}</div> : null}
               </div>
 
               <footer className="statusbar">
@@ -1135,6 +1250,9 @@ function App() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <button className="share-btn" disabled={shareDisabled} onClick={handleShareClick}>
+                    {shareBusy ? '… SHARING' : '⇱ SHARE'}
+                  </button>
                   <button className="rescan-btn" disabled={cancelling} onClick={handleRunButtonClick}>
                     {running ? (cancelling ? '… STOPPING' : '■ CANCEL') : '⟳ RUN'}
                   </button>
@@ -1225,6 +1343,7 @@ function App() {
                   </div>
                 )}
               </div>
+              {shareError ? <div className="error-banner">{shareError}</div> : null}
               <footer className="statusbar">
                 <div className="sb-item">
                   <span>{customHosts.length}</span>
@@ -1459,6 +1578,72 @@ function App() {
               </button>
               <button className="btn-delete" onClick={() => void removeCustomHost(deleteTarget.id)}>
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {shareWarningPayload ? (
+        <div className="modal-overlay open" onClick={() => setShareWarningPayload(null)}>
+          <div className="modal modal-confirm" onClick={(event) => event.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title">Share Custom Hosts</div>
+              <button className="modal-close" onClick={() => setShareWarningPayload(null)}>
+                ✕
+              </button>
+            </div>
+            <div className="confirm-body">
+              <div className="confirm-icon">⚠</div>
+              <div className="confirm-msg">Custom hosts and traceroute hops may expose internal infrastructure.</div>
+              <div className="confirm-sub">
+                Anyone with the link can view these results, and shares do not expire automatically.
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setShareWarningPayload(null)}>
+                Cancel
+              </button>
+              <button className="btn-save" disabled={shareBusy} onClick={() => void uploadShare(shareWarningPayload)}>
+                Share Anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {shareSuccess ? (
+        <div className="modal-overlay open" onClick={() => setShareSuccess(null)}>
+          <div className="modal modal-confirm" onClick={(event) => event.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title">Share Created</div>
+              <button className="modal-close" onClick={() => setShareSuccess(null)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body share-modal-body">
+              <div className="field">
+                <div className="field-label">Public URL</div>
+                <input className="field-input" readOnly value={shareSuccess.publicUrl} />
+              </div>
+              <div className="share-modal-note">
+                This snapshot is readonly and reflects the results collected on your machine at that moment.
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn-cancel"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(shareSuccess.publicUrl);
+                }}
+              >
+                Copy Link
+              </button>
+              <button className="btn-delete" disabled={shareBusy} onClick={() => void handleDeleteShare()}>
+                Delete Share
+              </button>
+              <button className="btn-save" onClick={() => setShareSuccess(null)}>
+                Close
               </button>
             </div>
           </div>

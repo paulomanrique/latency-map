@@ -6,6 +6,7 @@ import type {
   CustomHost,
   MeasurementBatch,
   PersistedState,
+  ShareRecord,
 } from '../shared/types';
 
 const DEFAULT_SETTINGS: AppSettings = { rounds: 5, concurrency: 5 };
@@ -14,6 +15,7 @@ const DEFAULT_STATE: PersistedState = {
   settings: DEFAULT_SETTINGS,
   customHosts: [],
   lastBatch: null,
+  shares: [],
 };
 
 export class AppStore {
@@ -33,7 +35,8 @@ export class AppStore {
           concurrency: parsed.settings?.concurrency ?? DEFAULT_SETTINGS.concurrency,
         },
         customHosts: parsed.customHosts ?? [],
-        lastBatch: null,
+        lastBatch: parsed.lastBatch ?? null,
+        shares: parsed.shares ?? [],
       };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
@@ -102,6 +105,21 @@ export class AppStore {
   async saveLastBatch(batch: MeasurementBatch): Promise<void> {
     const state = await this.read();
     state.lastBatch = batch;
+    await this.write(state);
+  }
+
+  async saveShareRecord(record: ShareRecord): Promise<void> {
+    const state = await this.read();
+    state.shares = [
+      record,
+      ...state.shares.filter((share) => share.publicId !== record.publicId),
+    ].slice(0, 50);
+    await this.write(state);
+  }
+
+  async deleteShareRecord(publicId: string): Promise<void> {
+    const state = await this.read();
+    state.shares = state.shares.filter((share) => share.publicId !== publicId);
     await this.write(state);
   }
 }

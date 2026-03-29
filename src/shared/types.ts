@@ -57,6 +57,14 @@ export interface AppSettings {
   concurrency: number;
 }
 
+export type ShareSortKey = 'latency' | 'distance' | 'hops';
+export type ShareSortDir = 'asc' | 'desc';
+
+export interface ShareSortState {
+  key: ShareSortKey;
+  dir: ShareSortDir;
+}
+
 export interface MeasurementHop {
   hop: number;
   ipAddress: string | null;
@@ -106,6 +114,7 @@ export interface PersistedState {
   settings: AppSettings;
   customHosts: CustomHost[];
   lastBatch: MeasurementBatch | null;
+  shares: ShareRecord[];
 }
 
 export interface RunMeasurementsRequest {
@@ -183,6 +192,75 @@ export interface NativeMeasureResponse {
   results: MeasurementResult[];
 }
 
+export interface ShareHostSnapshot {
+  id: string;
+  kind: 'catalog' | 'custom';
+  providerId: string;
+  providerName: string;
+  providerIcon: string;
+  city: string;
+  country: string;
+  continent: string;
+  location: string;
+  regionLabel: string;
+  hostname: string;
+  distanceKm: number | null;
+  result: MeasurementResult | null;
+}
+
+export interface ShareSummarySnapshot {
+  bestTargetId: string | null;
+  worstTargetId: string | null;
+  averageLatencyMs: number | null;
+  goodCount: number;
+  mediumCount: number;
+  badCount: number;
+  hostCount: number;
+}
+
+export interface ShareViewSnapshot {
+  mode: 'query' | 'provider' | 'custom';
+  activeProviderId: string | null;
+  activeProviderName: string | null;
+  locationMode: 'locations' | 'distance';
+  search: string;
+  sort: ShareSortState;
+}
+
+export interface SharePayloadV1 {
+  schemaVersion: 1;
+  appVersion: string;
+  createdAt: string;
+  query: QueryBuilderState;
+  settings: AppSettings;
+  batch: MeasurementBatch;
+  view: ShareViewSnapshot;
+  referenceLabel: string | null;
+  referenceSource: UserReferenceLocation['source'] | null;
+  containsCustomHosts: boolean;
+  hosts: ShareHostSnapshot[];
+  summary: ShareSummarySnapshot;
+}
+
+export interface CreateShareResponse {
+  publicId: string;
+  publicUrl: string;
+  deleteToken: string;
+}
+
+export interface DeleteShareRequest {
+  publicId: string;
+  deleteToken: string;
+}
+
+export interface ShareRecord {
+  publicId: string;
+  publicUrl: string;
+  deleteToken: string;
+  createdAt: string;
+  containsCustomHosts: boolean;
+}
+
 export interface LatencyMapApi {
   getCatalog: () => Promise<ProviderCatalog>;
   getAppState: () => Promise<PersistedState>;
@@ -194,6 +272,8 @@ export interface LatencyMapApi {
   deleteCustomHost: (id: string) => Promise<void>;
   runMeasurements: (request: RunMeasurementsRequest) => Promise<MeasurementBatch>;
   cancelMeasurements: () => Promise<boolean>;
+  createShare: (payload: SharePayloadV1) => Promise<CreateShareResponse>;
+  deleteShare: (request: DeleteShareRequest) => Promise<void>;
   getAppVersion: () => Promise<VersionInfo>;
   checkForUpdates: () => Promise<UpdateStatus>;
   openReleasesPage: () => Promise<void>;
