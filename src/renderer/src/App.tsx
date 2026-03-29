@@ -219,6 +219,7 @@ function App() {
   const [shareBusy, setShareBusy] = useState(false);
   const [shareError, setShareError] = useState<string | null>(null);
   const [shareWarningPayload, setShareWarningPayload] = useState<SharePayloadV1 | null>(null);
+  const [shareDeleteTarget, setShareDeleteTarget] = useState<ShareRecord | null>(null);
   const [shareSuccess, setShareSuccess] = useState<(CreateShareResponse & {
     containsCustomHosts: boolean;
   }) | null>(null);
@@ -246,6 +247,7 @@ function App() {
     function handleEsc(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         if (shareSuccess) setShareSuccess(null);
+        else if (shareDeleteTarget) setShareDeleteTarget(null);
         else if (shareWarningPayload) setShareWarningPayload(null);
         if (deleteTarget) setDeleteTarget(null);
         else if (editorOpen) setEditorOpen(false);
@@ -254,7 +256,7 @@ function App() {
     }
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
-  }, [settingsOpen, editorOpen, deleteTarget, shareSuccess, shareWarningPayload]);
+  }, [settingsOpen, editorOpen, deleteTarget, shareDeleteTarget, shareSuccess, shareWarningPayload]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -590,6 +592,7 @@ function App() {
       setShareRecords((current) => current.filter((item) => item.publicId !== share.publicId));
       pushRendererLog('warn', `Share deleted: ${share.publicId}`);
       setShareSuccess((current) => (current?.publicId === share.publicId ? null : current));
+      setShareDeleteTarget((current) => (current?.publicId === share.publicId ? null : current));
     } catch (deleteError) {
       const message = (deleteError as Error).message;
       setShareError(message);
@@ -1335,7 +1338,7 @@ function App() {
                                 </button>
                                 <button
                                   className="btn-icon btn-icon-del"
-                                  onClick={() => void handleDeleteShare(share)}
+                                  onClick={() => setShareDeleteTarget(share)}
                                   title="Delete share"
                                 >
                                   🗑
@@ -1729,6 +1732,32 @@ function App() {
         </div>
       ) : null}
 
+      {shareDeleteTarget ? (
+        <div className="modal-overlay open" onClick={() => setShareDeleteTarget(null)}>
+          <div className="modal modal-confirm" onClick={(event) => event.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title">Delete Share</div>
+              <button className="modal-close" onClick={() => setShareDeleteTarget(null)}>
+                ✕
+              </button>
+            </div>
+            <div className="confirm-body">
+              <div className="confirm-icon">🗑</div>
+              <div className="confirm-msg">Delete this share link?</div>
+              <div className="confirm-host">{shareDeleteTarget.publicUrl}</div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setShareDeleteTarget(null)}>
+                Cancel
+              </button>
+              <button className="btn-delete" disabled={shareBusy} onClick={() => void handleDeleteShare(shareDeleteTarget)}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {shareSuccess ? (
         <div className="modal-overlay open" onClick={() => setShareSuccess(null)}>
           <div className="modal modal-confirm" onClick={(event) => event.stopPropagation()}>
@@ -1760,9 +1789,12 @@ function App() {
                 className="btn-delete"
                 disabled={shareBusy}
                 onClick={() =>
-                  void handleDeleteShare({
+                  setShareDeleteTarget({
                     publicId: shareSuccess.publicId,
+                    publicUrl: shareSuccess.publicUrl,
                     deleteToken: shareSuccess.deleteToken,
+                    createdAt: new Date().toISOString(),
+                    containsCustomHosts: shareSuccess.containsCustomHosts,
                   })
                 }
               >
