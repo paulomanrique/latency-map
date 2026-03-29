@@ -220,6 +220,7 @@ function App() {
   const [shareError, setShareError] = useState<string | null>(null);
   const [shareWarningPayload, setShareWarningPayload] = useState<SharePayloadV1 | null>(null);
   const [shareDeleteTarget, setShareDeleteTarget] = useState<ShareRecord | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
   const [shareSuccess, setShareSuccess] = useState<(CreateShareResponse & {
     containsCustomHosts: boolean;
   }) | null>(null);
@@ -262,6 +263,20 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('latencymap-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!shareSuccess) {
+      setShareCopied(false);
+      return;
+    }
+
+    if (!shareCopied) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => setShareCopied(false), 1800);
+    return () => window.clearTimeout(timeout);
+  }, [shareCopied, shareSuccess]);
 
   useEffect(() => {
     const load = async () => {
@@ -1784,9 +1799,10 @@ function App() {
                 className="btn-cancel"
                 onClick={async () => {
                   await navigator.clipboard.writeText(shareSuccess.publicUrl);
+                  setShareCopied(true);
                 }}
               >
-                Copy Link
+                {shareCopied ? 'Copied' : 'Copy Link'}
               </button>
               <button
                 className="btn-cancel"
