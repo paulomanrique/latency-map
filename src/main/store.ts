@@ -29,15 +29,21 @@ export class AppStore {
     try {
       const raw = await fs.readFile(this.filePath, 'utf8');
       const parsed = JSON.parse(raw) as PersistedState;
-      return {
+      const state: PersistedState = {
         settings: {
           rounds: parsed.settings?.rounds ?? DEFAULT_SETTINGS.rounds,
           concurrency: parsed.settings?.concurrency ?? DEFAULT_SETTINGS.concurrency,
         },
         customHosts: parsed.customHosts ?? [],
-        lastBatch: parsed.lastBatch ?? null,
+        lastBatch: null,
         shares: parsed.shares ?? [],
       };
+
+      if (parsed.lastBatch) {
+        await this.write(state);
+      }
+
+      return state;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
         return DEFAULT_STATE;
@@ -103,9 +109,7 @@ export class AppStore {
   }
 
   async saveLastBatch(batch: MeasurementBatch): Promise<void> {
-    const state = await this.read();
-    state.lastBatch = batch;
-    await this.write(state);
+    void batch;
   }
 
   async saveShareRecord(record: ShareRecord): Promise<void> {

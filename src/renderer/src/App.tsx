@@ -275,7 +275,7 @@ function App() {
       setSettings(state.settings);
       setCustomHosts(state.customHosts);
       setShareRecords(state.shares);
-      setBatch(state.lastBatch);
+      setBatch(null);
       setVersion(versionInfo.version);
       setLogs(existingLogs);
       setViewMode('query');
