@@ -5,21 +5,15 @@ import type {
   SharePayloadV1,
 } from '../shared/types';
 
-const DEFAULT_API_URL = 'https://api.latencymap.net';
-const DEFAULT_KEY_ID = 'desktop-v1';
+const SHARE_API_URL = 'https://api.latencymap.net';
+const SHARE_KEY_ID = 'desktop-v1';
+const SHARE_SECRET = '65b1bb3925edc6a5a02464b9b99e8abcf19cf83ba71101f0c6670cbaf73ac560';
+
 function getShareConfig() {
-  const apiUrl = process.env.LATENCYMAP_SHARE_API_URL || DEFAULT_API_URL;
-  const keyId = process.env.LATENCYMAP_SHARE_KEY_ID || DEFAULT_KEY_ID;
-  const secret = process.env.LATENCYMAP_SHARE_SECRET;
-
-  if (!secret) {
-    throw new Error('Share service is not configured. Set LATENCYMAP_SHARE_SECRET before using Share.');
-  }
-
   return {
-    apiUrl: apiUrl.replace(/\/+$/, ''),
-    keyId,
-    secret,
+    apiUrl: SHARE_API_URL,
+    keyId: SHARE_KEY_ID,
+    secret: SHARE_SECRET,
   };
 }
 
