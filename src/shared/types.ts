@@ -279,6 +279,7 @@ export interface LatencyMapApi {
   cancelMeasurements: () => Promise<boolean>;
   createShare: (payload: SharePayloadV1) => Promise<CreateShareResponse>;
   deleteShare: (request: DeleteShareRequest) => Promise<void>;
+  openShareUrl: (url: string) => Promise<void>;
   getAppVersion: () => Promise<VersionInfo>;
   checkForUpdates: () => Promise<UpdateStatus>;
   openReleasesPage: () => Promise<void>;

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { join } from 'node:path';
 import { catalog } from '../shared/catalog';
 import type {
@@ -132,6 +132,9 @@ app.whenReady().then(() => {
     await deleteShare(request);
     await appStore.deleteShareRecord(request.publicId);
     writeLog('main', 'warn', `Share deleted ${request.publicId}`);
+  });
+  ipcMain.handle('share:open', async (_event, url: string) => {
+    await shell.openExternal(url);
   });
   ipcMain.handle('version:get', async () => ({
     version: app.getVersion(),

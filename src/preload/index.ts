@@ -19,6 +19,7 @@ const api: LatencyMapApi = {
   cancelMeasurements: () => ipcRenderer.invoke('measurements:cancel'),
   createShare: (payload: SharePayloadV1) => ipcRenderer.invoke('share:create', payload),
   deleteShare: (request: DeleteShareRequest) => ipcRenderer.invoke('share:delete', request),
+  openShareUrl: (url: string) => ipcRenderer.invoke('share:open', url),
   getAppVersion: () => ipcRenderer.invoke('version:get'),
   checkForUpdates: () => ipcRenderer.invoke('updates:check'),
   openReleasesPage: () => ipcRenderer.invoke('updates:open-releases'),

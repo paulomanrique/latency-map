@@ -1321,7 +1321,7 @@ function App() {
                               <div className="row-actions">
                                 <button
                                   className="btn-icon btn-icon-open"
-                                  onClick={() => window.open(share.publicUrl, '_blank', 'noopener,noreferrer')}
+                                  onClick={() => void window.latencyMap.openShareUrl(share.publicUrl)}
                                   title="Open share"
                                 >
                                   ↗
@@ -1786,19 +1786,10 @@ function App() {
                 Copy Link
               </button>
               <button
-                className="btn-delete"
-                disabled={shareBusy}
-                onClick={() =>
-                  setShareDeleteTarget({
-                    publicId: shareSuccess.publicId,
-                    publicUrl: shareSuccess.publicUrl,
-                    deleteToken: shareSuccess.deleteToken,
-                    createdAt: new Date().toISOString(),
-                    containsCustomHosts: shareSuccess.containsCustomHosts,
-                  })
-                }
+                className="btn-cancel"
+                onClick={() => void window.latencyMap.openShareUrl(shareSuccess.publicUrl)}
               >
-                Delete Share
+                Open Share
               </button>
               <button className="btn-save" onClick={() => setShareSuccess(null)}>
                 Close
