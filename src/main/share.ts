@@ -1,51 +1,15 @@
-import { createHash, createHmac } from 'node:crypto';
 import type {
   CreateShareResponse,
+  CreateShareTokenResponse,
   DeleteShareRequest,
   SharePayloadV1,
 } from '../shared/types';
 
 const SHARE_API_URL = 'https://api.latencymap.net';
-const SHARE_KEY_ID = 'desktop-v1';
-const SHARE_SECRET = '65b1bb3925edc6a5a02464b9b99e8abcf19cf83ba71101f0c6670cbaf73ac560';
 
 function getShareConfig() {
   return {
     apiUrl: SHARE_API_URL,
-    keyId: SHARE_KEY_ID,
-    secret: SHARE_SECRET,
-  };
-}
-
-function sha256(value: string): string {
-  return createHash('sha256').update(value, 'utf8').digest('hex');
-}
-
-function signRequest(
-  method: 'POST' | 'DELETE',
-  path: string,
-  timestamp: string,
-  body: string,
-  secret: string
-): string {
-  const canonical = [method, path, timestamp, sha256(body)].join('\n');
-  return createHmac('sha256', secret).update(canonical, 'utf8').digest('hex');
-}
-
-function buildSignedHeaders(
-  method: 'POST' | 'DELETE',
-  path: string,
-  body: string
-): HeadersInit {
-  const { keyId, secret } = getShareConfig();
-  const timestamp = new Date().toISOString();
-  const signature = signRequest(method, path, timestamp, body, secret);
-
-  return {
-    'Content-Type': 'application/json',
-    'X-LatencyMap-Key-Id': keyId,
-    'X-LatencyMap-Timestamp': timestamp,
-    'X-LatencyMap-Signature': signature,
   };
 }
 
@@ -65,14 +29,27 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
   return data as T;
 }
 
+async function createShareToken(): Promise<CreateShareTokenResponse> {
+  const { apiUrl } = getShareConfig();
+  const response = await fetch(`${apiUrl}/api/v1/share-token`, {
+    method: 'POST',
+  });
+
+  return parseJsonResponse<CreateShareTokenResponse>(response);
+}
+
 export async function createShare(payload: SharePayloadV1): Promise<CreateShareResponse> {
   const { apiUrl } = getShareConfig();
   const path = '/api/v1/shares';
   const body = JSON.stringify(payload);
+  const shareToken = await createShareToken();
 
   const response = await fetch(`${apiUrl}${path}`, {
     method: 'POST',
-    headers: buildSignedHeaders('POST', path, body),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-LatencyMap-Share-Token': shareToken.token,
+    },
     body,
   });
 
@@ -86,7 +63,9 @@ export async function deleteShare(request: DeleteShareRequest): Promise<void> {
 
   const response = await fetch(`${apiUrl}${path}`, {
     method: 'DELETE',
-    headers: buildSignedHeaders('DELETE', path, body),
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body,
   });
 

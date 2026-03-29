@@ -248,6 +248,11 @@ export interface CreateShareResponse {
   deleteToken: string;
 }
 
+export interface CreateShareTokenResponse {
+  token: string;
+  expiresAt: string;
+}
+
 export interface DeleteShareRequest {
   publicId: string;
   deleteToken: string;
