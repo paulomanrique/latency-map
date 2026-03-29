@@ -9,6 +9,7 @@ import type {
   ProviderCatalog,
   QueryBuilderState,
   RunMeasurementsRequest,
+  ShareRecord,
   SharePayloadV1,
   UpdateStatus,
   UserReferenceLocation,
@@ -30,7 +31,7 @@ import {
 } from './lib/models';
 import { buildSharePayload, getActiveProviderName } from './lib/share';
 
-type ViewMode = 'query' | 'custom';
+type ViewMode = 'query' | 'custom' | 'shares';
 type LocationMode = 'locations' | 'distance';
 
 function toggleSort(current: SortState, key: SortKey): SortState {
@@ -186,6 +187,7 @@ function App() {
   const [catalog, setCatalog] = useState<ProviderCatalog | null>(null);
   const [settings, setSettings] = useState<AppSettings>({ rounds: 5, concurrency: 5 });
   const [customHosts, setCustomHosts] = useState<CustomHost[]>([]);
+  const [shareRecords, setShareRecords] = useState<ShareRecord[]>([]);
   const [batch, setBatch] = useState<MeasurementBatch | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('query');
   const [activeProviderId, setActiveProviderId] = useState<string | null>(null);
@@ -270,6 +272,7 @@ function App() {
       setCatalog(catalogData);
       setSettings(state.settings);
       setCustomHosts(state.customHosts);
+      setShareRecords(state.shares);
       setBatch(state.lastBatch);
       setVersion(versionInfo.version);
       setLogs(existingLogs);
@@ -463,6 +466,18 @@ function App() {
     () => customDisplayHosts.filter((host) => searchMatch(host, search)).sort(makeSortComparator(sort)),
     [customDisplayHosts, search, sort]
   );
+  const filteredShareRecords = useMemo(
+    () =>
+      shareRecords.filter((share) => {
+        if (!search.trim()) return true;
+        const term = search.trim().toLowerCase();
+        return (
+          share.publicId.toLowerCase().includes(term) ||
+          share.publicUrl.toLowerCase().includes(term)
+        );
+      }),
+    [search, shareRecords]
+  );
 
   const providerHosts = useMemo(() => {
     if (!activeProviderId) {
@@ -528,6 +543,16 @@ function App() {
         ...result,
         containsCustomHosts: payload.containsCustomHosts,
       });
+      setShareRecords((current) => [
+        {
+          publicId: result.publicId,
+          publicUrl: result.publicUrl,
+          deleteToken: result.deleteToken,
+          createdAt: payload.createdAt,
+          containsCustomHosts: payload.containsCustomHosts,
+        },
+        ...current.filter((share) => share.publicId !== result.publicId),
+      ].slice(0, 50));
       pushRendererLog('info', `Share created: ${result.publicUrl}`);
     } catch (shareRequestError) {
       const message = (shareRequestError as Error).message;
@@ -554,20 +579,17 @@ function App() {
     }
   }
 
-  async function handleDeleteShare() {
-    if (!shareSuccess) {
-      return;
-    }
-
+  async function handleDeleteShare(share: Pick<ShareRecord, 'publicId' | 'deleteToken'>) {
     setShareBusy(true);
     setShareError(null);
     try {
       await window.latencyMap.deleteShare({
-        publicId: shareSuccess.publicId,
-        deleteToken: shareSuccess.deleteToken,
+        publicId: share.publicId,
+        deleteToken: share.deleteToken,
       });
-      pushRendererLog('warn', `Share deleted: ${shareSuccess.publicId}`);
-      setShareSuccess(null);
+      setShareRecords((current) => current.filter((item) => item.publicId !== share.publicId));
+      pushRendererLog('warn', `Share deleted: ${share.publicId}`);
+      setShareSuccess((current) => (current?.publicId === share.publicId ? null : current));
     } catch (deleteError) {
       const message = (deleteError as Error).message;
       setShareError(message);
@@ -800,7 +822,9 @@ function App() {
     viewMode === 'custom' ? filteredCustomHosts : activeProviderId ? providerHosts : rankedHosts;
   const summary = summarizeHosts(visibleHosts);
   const hostMetricCount =
-    viewMode === 'custom'
+    viewMode === 'shares'
+      ? filteredShareRecords.length
+      : viewMode === 'custom'
       ? filteredCustomHosts.length
       : activeProviderId
         ? providerHosts.length
@@ -840,6 +864,15 @@ function App() {
               }}
             >
               <span className="nav-icon">✦</span>Custom Hosts
+            </div>
+            <div
+              className={`nav-item ${viewMode === 'shares' ? 'active' : ''}`}
+              onClick={() => {
+                setViewMode('shares');
+                setActiveProviderId(null);
+              }}
+            >
+              <span className="nav-icon">⇱</span>My Shares
             </div>
             <div className="sidebar-divider"></div>
             <div className="sidebar-section-label">Providers</div>
@@ -1237,6 +1270,90 @@ function App() {
                 <div className="sb-item">
                   <span className="bad-text">●</span>
                   <span className="sb-val bad-text">{summary.badCount} poor</span>
+                </div>
+              </footer>
+            </div>
+          ) : viewMode === 'shares' ? (
+            <div className="view active">
+              <div className="ch-header">
+                <div>
+                  <div className="ch-title">My Shares</div>
+                  <div className="ch-subtitle">
+                    Links created from this machine for readonly published snapshots
+                  </div>
+                </div>
+              </div>
+              <div className="table-scroll">
+                {filteredShareRecords.length === 0 ? (
+                  <div className="ch-empty">
+                    <div className="ch-empty-icon">⇱</div>
+                    <div className="ch-empty-text">No shares yet</div>
+                    <div className="ch-empty-sub">
+                      Create a share from a completed measurement to manage it here
+                    </div>
+                  </div>
+                ) : (
+                  <div className="provider-block">
+                    <div className="provider-heading">
+                      <span className="provider-icon">⇱</span>
+                      <span className="provider-label">Saved Shares</span>
+                      <span className="provider-pill">{filteredShareRecords.length} links</span>
+                    </div>
+                    <table className="data-table shares-table">
+                      <thead>
+                        <tr>
+                          <th style={{ width: '22%' }}>Created</th>
+                          <th style={{ width: '44%' }}>URL</th>
+                          <th style={{ width: '12%' }}>Scope</th>
+                          <th style={{ width: '22%' }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredShareRecords.map((share) => (
+                          <tr className="host-row shares-row" key={share.publicId}>
+                            <td>{new Date(share.createdAt).toLocaleString()}</td>
+                            <td><span className="muted-inline share-link-text">{share.publicUrl}</span></td>
+                            <td>{share.containsCustomHosts ? 'Custom' : 'Catalog'}</td>
+                            <td>
+                              <div className="row-actions">
+                                <button
+                                  className="btn-icon btn-icon-open"
+                                  onClick={() => window.open(share.publicUrl, '_blank', 'noopener,noreferrer')}
+                                  title="Open share"
+                                >
+                                  ↗
+                                </button>
+                                <button
+                                  className="btn-icon btn-icon-copy"
+                                  onClick={async () => {
+                                    await navigator.clipboard.writeText(share.publicUrl);
+                                    pushRendererLog('info', `Copied share URL ${share.publicId}`);
+                                  }}
+                                  title="Copy share URL"
+                                >
+                                  ⧉
+                                </button>
+                                <button
+                                  className="btn-icon btn-icon-del"
+                                  onClick={() => void handleDeleteShare(share)}
+                                  title="Delete share"
+                                >
+                                  🗑
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {shareError ? <div className="error-banner">{shareError}</div> : null}
+              </div>
+              <footer className="statusbar">
+                <div className="sb-item">
+                  <span>{shareRecords.length}</span>
+                  <span className="sb-val">shares stored locally</span>
                 </div>
               </footer>
             </div>
@@ -1639,7 +1756,16 @@ function App() {
               >
                 Copy Link
               </button>
-              <button className="btn-delete" disabled={shareBusy} onClick={() => void handleDeleteShare()}>
+              <button
+                className="btn-delete"
+                disabled={shareBusy}
+                onClick={() =>
+                  void handleDeleteShare({
+                    publicId: shareSuccess.publicId,
+                    deleteToken: shareSuccess.deleteToken,
+                  })
+                }
+              >
                 Delete Share
               </button>
               <button className="btn-save" onClick={() => setShareSuccess(null)}>

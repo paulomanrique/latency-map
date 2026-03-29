@@ -911,6 +911,21 @@ body {
   color: var(--bad);
 }
 
+.btn-icon-open:hover,
+.btn-icon-copy:hover {
+  color: var(--text-primary);
+}
+
+.shares-row td {
+  vertical-align: middle;
+}
+
+.share-link-text {
+  display: inline-block;
+  max-width: 100%;
+  word-break: break-all;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
