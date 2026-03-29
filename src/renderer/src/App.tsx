@@ -278,6 +278,12 @@ function App() {
       setBatch(state.lastBatch);
       setVersion(versionInfo.version);
       setLogs(existingLogs);
+      setViewMode('query');
+      setActiveProviderId(null);
+      setSearch('');
+      setSort({ key: 'latency', dir: 'asc' });
+      setExpandedHostId(null);
+      setLocationMode('locations');
       setUpdateStatus({
         platform: versionInfo.platform,
         currentVersion: versionInfo.version,
@@ -285,13 +291,10 @@ function App() {
         status: 'idle',
         autoInstallSupported: versionInfo.platform === 'win32',
       });
-      setQuery((current) => ({
-        ...current,
-        selectedProviderIds:
-          current.selectedProviderIds.length > 0
-            ? current.selectedProviderIds
-            : catalogData.providers.map((provider) => provider.id),
-      }));
+      setQuery({
+        ...EMPTY_QUERY,
+        selectedProviderIds: catalogData.providers.map((provider) => provider.id),
+      });
     };
 
     void load();
