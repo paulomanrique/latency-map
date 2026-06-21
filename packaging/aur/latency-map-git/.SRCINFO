@@ -1,6 +1,6 @@
 pkgbase = latency-map-git
 	pkgdesc = Desktop latency benchmarking app with Electron and native system network tools
-	pkgver = 0.0.5.r3.g563ce6c
+	pkgver = 0.0.5.r4.gceea59a
 	pkgrel = 1
 	url = https://github.com/paulomanrique/latency-map
 	arch = x86_64

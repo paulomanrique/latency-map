@@ -13,14 +13,14 @@ provides=('latency-map')
 conflicts=('latency-map' 'latency-map-git')
 options=('!strip')
 source=(
-  "latency-map.png::https://raw.githubusercontent.com/paulomanrique/latency-map/v${pkgver}/assets/icon.png"
+  'latency-map.png'
   'latency-map.desktop'
   'latency-map.sh'
 )
 source_x86_64=("LatencyMap-${pkgver}-linux-x86_64.AppImage::${url}/releases/download/v${pkgver}/LatencyMap-${pkgver}-linux-x86_64.AppImage")
 source_aarch64=("LatencyMap-${pkgver}-linux-arm64.AppImage::${url}/releases/download/v${pkgver}/LatencyMap-${pkgver}-linux-arm64.AppImage")
 sha256sums=(
-  '02f4a797141ca57216feee379bba9f0612c34e72ebcdf0720eae2ef57aeabcc0'
+  '94ac4fd79a20265b5448b4d745edf09cea3bc34e80aee90a407a60176cb8aaad'
   '52267164dcca52da84ad8944dccdb808de2e8c263047e4b43eb2204bf29eb123'
   'e1ad15fcbe663a3062441059d2c4eb7b29e7094c063e6b0ba30b6f00ec1a7a68'
 )
