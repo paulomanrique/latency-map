@@ -54,7 +54,8 @@
       {
         "provider": "github",
         "owner": "${env.GH_RELEASE_OWNER}",
-        "repo": "${env.GH_RELEASE_REPO}"
+        "repo": "${env.GH_RELEASE_REPO}",
+        "releaseType": "release"
       }
     ],
     "win": {
