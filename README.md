@@ -24,6 +24,20 @@ Download the latest release for your platform:
 | macOS | DMG, ZIP |
 | Linux | AppImage, tar.gz |
 
+### Arch Linux
+
+LatencyMap is available from the AUR:
+
+```bash
+# Stable release package
+yay -S latency-map-bin
+
+# Latest Git build
+yay -S latency-map-git
+```
+
+Both AUR packages install `traceroute`, which LatencyMap uses for hop measurements on Linux.
+
 ## Contributing
 
 The host catalog lives in the `data/` directory — one JSON file per provider. The app picks up any `*.json` in that folder automatically, so adding a new provider or expanding an existing one requires no code changes.
