@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import { join } from 'node:path';
 import { catalog } from '../shared/catalog';
 import type {
@@ -30,6 +30,7 @@ function createWindow(): void {
     minWidth: 1240,
     minHeight: 760,
     backgroundColor: '#0e1119',
+    autoHideMenuBar: true,
     show: false,
     webPreferences: {
       preload: join(__dirname, '../preload/index.mjs'),
@@ -41,6 +42,8 @@ function createWindow(): void {
     mainWindow?.show();
   });
 
+  mainWindow.setMenu(null);
+
   if (process.env.ELECTRON_RENDERER_URL) {
     void mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
   } else {
@@ -49,6 +52,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  Menu.setApplicationMenu(null);
   writeLog('main', 'info', 'Application started.');
   ipcMain.handle('catalog:get', async () => activeCatalog);
   ipcMain.handle('state:get', async () => appStore.read());
