@@ -205,19 +205,45 @@ async function runTraceroute(host: string, signal?: AbortSignal): Promise<Measur
     return parseWindowsTracert(stdout);
   }
 
-  const tool = process.platform === 'darwin' ? 'traceroute' : 'traceroute';
-  const { stdout, stderr } = await execFileAsync(
-    tool,
-    ['-n', '-q', '1', '-w', '1', '-m', '30', host],
-    {
+  try {
+    const { stdout, stderr } = await execFileAsync(
+      'traceroute',
+      ['-n', '-q', '1', '-w', '1', '-m', '30', host],
+      {
+        timeout: 35_000,
+        signal,
+      }
+    );
+    if (stderr.trim()) {
+      writeLog('main', 'warn', `traceroute stderr for ${host}: ${stderr.trim()}`);
+    }
+    return parseUnixTraceroute(stdout);
+  } catch (error) {
+    if (!isMissingCommandError(error)) {
+      throw error;
+    }
+    if (process.platform !== 'linux') {
+      writeLog('main', 'warn', `No traceroute command available for ${host}; hop data skipped.`);
+      return [];
+    }
+  }
+
+  try {
+    const { stdout, stderr } = await execFileAsync('tracepath', ['-n', '-m', '30', host], {
       timeout: 35_000,
       signal,
+    });
+    if (stderr.trim()) {
+      writeLog('main', 'warn', `tracepath stderr for ${host}: ${stderr.trim()}`);
     }
-  );
-  if (stderr.trim()) {
-    writeLog('main', 'warn', `traceroute stderr for ${host}: ${stderr.trim()}`);
+    return parseLinuxTracepath(stdout);
+  } catch (error) {
+    if (!isMissingCommandError(error)) {
+      throw error;
+    }
+    writeLog('main', 'warn', `No traceroute command available for ${host}; hop data skipped.`);
+    return [];
   }
-  return parseUnixTraceroute(stdout);
 }
 
 function parseUnixPing(output: string): PingSummary {
@@ -354,6 +380,49 @@ function parseWindowsTracert(output: string): MeasurementHop[] {
   return hops;
 }
 
+function parseLinuxTracepath(output: string): MeasurementHop[] {
+  const hops = new Map<number, MeasurementHop>();
+
+  for (const rawLine of output.split('\n')) {
+    const line = rawLine.trim();
+    const match = line.match(/^(\d+):\s+(.+)$/);
+    if (!match) continue;
+
+    const hop = Number(match[1]);
+    if (!Number.isFinite(hop)) continue;
+
+    const details = match[2].trim();
+    if (details.startsWith('no reply')) {
+      if (!hops.has(hop)) {
+        hops.set(hop, emptyHop(hop));
+      }
+      continue;
+    }
+
+    const rttMatch = details.match(/([\d.]+)ms/);
+    if (!rttMatch) continue;
+
+    const rtt = Number(rttMatch[1]);
+    const ipAddress = details.split(/\s+/)[0] ?? null;
+    hops.set(hop, {
+      hop,
+      ipAddress,
+      hostname: ipAddress,
+      lastRttMs: rtt,
+      avgRttMs: rtt,
+      bestRttMs: rtt,
+      worstRttMs: rtt,
+      jitterAvgMs: null,
+      lossPercent: 0,
+      sent: 1,
+      received: 1,
+      timedOut: false,
+    });
+  }
+
+  return [...hops.values()].sort((left, right) => left.hop - right.hop);
+}
+
 function emptyHop(hop: number): MeasurementHop {
   return {
     hop,
@@ -400,5 +469,13 @@ function isAbortError(error: unknown): boolean {
     (error.name === 'AbortError' ||
       error.message.includes('The operation was aborted') ||
       error.message.includes('The operation was canceled'))
+  );
+}
+
+function isMissingCommandError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    'code' in error &&
+    (error as NodeJS.ErrnoException).code === 'ENOENT'
   );
 }
